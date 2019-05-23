@@ -1,0 +1,11 @@
+{
+  "name": "js-test-views",
+  "version": "1.0.0",
+  "description": "Use test views to decouple tests from implementation details",
+  "main": "index.js",
+  "author": "Mojotech",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.4.5"
+  }
+}
