@@ -18,8 +18,10 @@ interface TestView<S, E, A> {
     <NA extends { [k: string]: Action<E> }>(nextView: TestView<S, E, NA>): TestView<S, E, NA>;
 }
 
-type TestViewConstructor<S, E> =
-    <A extends { [k: string]: Action<E> }>(selector: S, actions: A) => TestView<S, E, A>;
+interface TestViewConstructor<S, E> {
+    <A extends { [k: string]: Action<E> }>(selector: S, actions: A): TestView<S, E, A>;
+    defaultViews: DefaultViews<S, E>;
+}
 
 type DefaultActions<E> = {
     get: (e: E) => E
@@ -65,7 +67,8 @@ type MaterializedActions<E, A extends { [k: string]: Action<E> }> = {
 // less efficient.
 export const makeTestViewConstructor = <S, E>(
     composeSelectors: ComposeSelectors<S>,
-    actionRealizer: ActionMaterializer<S, E>
+    actionRealizer: ActionMaterializer<S, E>,
+    defaultViews: DefaultViews<S, E>
 ): TestViewConstructor<S, E> => {
     // Once an adapter is plugged in, test views are created by supplying a
     // selector and a dictionary of actions. Views are functions, and are chained
@@ -121,3 +124,33 @@ export const makeActionMaterializer = <S, E, EG>(
                 runSelector(selector, root),
                 (e) => action(e, ...args)
             );
+
+interface DefaultViews<S, E> {
+  checkbox: TestView<S, E, {
+    toggle: (e: E) => void;
+    isChecked: (e: E) => boolean;
+    getValue: (e: E) => string;
+  }>;
+  radio: TestView<S, E, {
+    select: (e: E, value: string) => void;
+    getSelection: (e: E) => void;
+  }>;
+  textInput: TestView<S, E, {
+    enterText: (e: E, text: string) => void;
+    getText: (e: E) => string;
+  }>;
+  singleSelect: TestView<S, E, {
+    select: (e: E, value: string) => void;
+    getSelection: (e: E) => string;
+  }>;
+  multiSelect: TestView<S, E, {
+    select: (e: E, value: string[]) => void;
+    getSelection: (e: E) => string[];
+  }>;
+  form: TestView<S, E, {
+    submit: (e: E) => void;
+  }>;
+  button: TestView<S, E, {
+    click: (e: E) => void;
+  }>;
+}
