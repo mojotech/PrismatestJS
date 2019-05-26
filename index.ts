@@ -22,7 +22,7 @@ type TestViewConstructor<S, E> =
     <A extends { [k: string]: Action<E> }>(selector: S, actions: A) => TestView<S, E, A>;
 
 type DefaultActions<E> = {
-    getNode: (e: E) => E
+    get: (e: E) => E
 }
 
 // Helper to get the tail of a tuple
@@ -72,7 +72,7 @@ export const testViewFactory = <S, E>(
     // together with normal function calls. When a view is finished being
     // constructed it is materialized by collecting a root node and bringing it
     // in scope of all the actions. Actions can then be run and will query the
-    // root node using the composed selector. A default `getNode` action is
+    // root node using the composed selector. A default `get` action is
     // always present to return the node(s) selected.
     const testView = <A extends { [k: string]: Action<E> }>(
         selector: S,
@@ -87,7 +87,7 @@ export const testViewFactory = <S, E>(
         view.selector = selector;
         view.materialize = (root: E) => {
             const defaultActions: MaterializedActions<E, DefaultActions<E>> = {
-                getNode: actionRealizer(selector, (e: E) => e, root)
+                get: actionRealizer(selector, (e: E) => e, root)
             };
             const materializedActions = {} as MaterializedActions<E, A>;
 
