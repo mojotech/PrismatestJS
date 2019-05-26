@@ -63,7 +63,7 @@ type MaterializedActions<E, A extends { [k: string]: Action<E> }> = {
 // light and efficient method. While an Enzyme adapter would allow selecting
 // elements by chaining Enzyme methods which is more flexible than XPath but
 // less efficient.
-export const testViewFactory = <S, E>(
+export const makeTestViewConstructor = <S, E>(
     composeSelectors: ComposeSelectors<S>,
     actionRealizer: ActionMaterializer<S, E>
 ): TestViewConstructor<S, E> => {
