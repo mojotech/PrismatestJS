@@ -105,12 +105,13 @@ export const makeTestViewConstructor = <S, E>(
 
         return view;
     };
+    testView.defaultViews = defaultViews;
     return testView;
 };
 
 // Create an action realizer by providing a way to run a selector and iterate
 // over selector results.
-export const makeActionRealizer = <S, E, EG>(
+export const makeActionMaterializer = <S, E, EG>(
     runSelector: (selector: S, root: E) => EG,
     forEachElement: <A extends Action<E>>(elements: EG, fn: (e: E) => ReturnType<A>) => ReturnType<A>[]
 ): ActionMaterializer<S, E> =>
