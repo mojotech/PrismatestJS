@@ -6,11 +6,15 @@
   "author": "Mojotech",
   "license": "MIT",
   "devDependencies": {
+    "prettier": "^1.17.1",
     "typescript": "^3.4.5"
   },
   "scripts": {
-      "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
-      "clean": "rm -rf ./dist"
+    "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
+    "clean": "rm -rf ./dist",
+    "format": "prettier --write index.ts"
   },
-  "files": ["./dist"]
+  "files": [
+    "./dist"
+  ]
 }
