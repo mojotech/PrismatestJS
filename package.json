@@ -7,5 +7,10 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^3.4.5"
-  }
+  },
+  "scripts": {
+      "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
+      "clean": "rm -rf ./dist"
+  },
+  "files": ["./dist"]
 }

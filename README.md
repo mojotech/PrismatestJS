@@ -196,3 +196,7 @@ This view selects a form. It provides an action to submit the form.
 This view selects button controls. This includes elements of type button, as
 well as inputs with type button and inputs with type submit. It provides an
 action to click the button.
+
+## Contributing
+
+Build the project using `yarn build` or `npm run build`.

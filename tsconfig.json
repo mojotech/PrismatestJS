@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "noImplicitReturns": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmitOnError": true,
+        "noErrorTruncation": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "target": "ES5"
+    },
+    "files": [
+        "index.ts"
+    ]
+}
