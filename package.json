@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
+    "ts": "tsc --listFiles -w --noEmit",
     "clean": "rm -rf ./dist",
     "format": "prettier --write index.ts"
   },
