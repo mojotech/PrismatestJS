@@ -1,6 +1,8 @@
-// S = SelectorType
-// E = ElementType
-// NA = NextActions
+// Explanation of generic type parameters used
+// S = Selector type
+// E = Element type
+// EG = Element group type
+// NA = Next actions
 // A = Actions
 
 // ComposeSelectors must be associative
