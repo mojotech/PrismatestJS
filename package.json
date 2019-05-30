@@ -2,7 +2,7 @@
   "name": "js-test-views",
   "version": "1.0.0",
   "description": "Use test views to decouple tests from implementation details",
-  "main": "index.js",
+  "main": "dist/index.js",
   "author": "Mojotech",
   "license": "MIT",
   "devDependencies": {
