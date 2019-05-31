@@ -24,7 +24,7 @@ interface TestViewConstructor<S, E> {
     E,
     A
   >;
-  defaultViews: DefaultViews<S, E>;
+  defaultViews: MaterializedDefaultViews<S, E>;
 }
 
 type DefaultActions<E> = {
@@ -124,7 +124,31 @@ const makeTestViewConstructor = <S, E>(
 
     return view;
   };
-  testView.defaultViews = defaultViews;
+
+  const materializedDefaultViews: MaterializedDefaultViews<S, E> = {
+    checkbox: testView(
+      defaultViews.checkbox.selector,
+      defaultViews.checkbox.actions
+    ),
+    radio: testView(defaultViews.radio.selector, defaultViews.radio.actions),
+    textInput: testView(
+      defaultViews.textInput.selector,
+      defaultViews.textInput.actions
+    ),
+    singleSelect: testView(
+      defaultViews.singleSelect.selector,
+      defaultViews.singleSelect.actions
+    ),
+    multiSelect: testView(
+      defaultViews.multiSelect.selector,
+      defaultViews.multiSelect.actions
+    ),
+    form: testView(defaultViews.form.selector, defaultViews.form.actions),
+    button: testView(defaultViews.button.selector, defaultViews.button.actions)
+  };
+
+  testView.defaultViews = materializedDefaultViews;
+
   return testView;
 };
 
@@ -159,8 +183,13 @@ export const makeAdapter = <S, E, EG>(
     defaultViews
   );
 
-interface DefaultViews<S, E> {
-  checkbox: TestView<
+export interface DefaultView<S, E, A extends { [k: string]: Action<E> }> {
+  selector: S;
+  actions: A;
+}
+
+export interface DefaultViews<S, E> {
+  checkbox: DefaultView<
     S,
     E,
     {
@@ -169,7 +198,7 @@ interface DefaultViews<S, E> {
       getValue: (e: E) => string;
     }
   >;
-  radio: TestView<
+  radio: DefaultView<
     S,
     E,
     {
@@ -177,7 +206,7 @@ interface DefaultViews<S, E> {
       getSelection: (e: E) => void;
     }
   >;
-  textInput: TestView<
+  textInput: DefaultView<
     S,
     E,
     {
@@ -185,7 +214,7 @@ interface DefaultViews<S, E> {
       getText: (e: E) => string;
     }
   >;
-  singleSelect: TestView<
+  singleSelect: DefaultView<
     S,
     E,
     {
@@ -193,7 +222,7 @@ interface DefaultViews<S, E> {
       getSelection: (e: E) => string;
     }
   >;
-  multiSelect: TestView<
+  multiSelect: DefaultView<
     S,
     E,
     {
@@ -201,14 +230,14 @@ interface DefaultViews<S, E> {
       getSelection: (e: E) => string[];
     }
   >;
-  form: TestView<
+  form: DefaultView<
     S,
     E,
     {
       submit: (e: E) => void;
     }
   >;
-  button: TestView<
+  button: DefaultView<
     S,
     E,
     {
@@ -216,3 +245,17 @@ interface DefaultViews<S, E> {
     }
   >;
 }
+
+type MaterializedDefaultView<D> = D extends DefaultView<
+  infer S,
+  infer E,
+  infer A
+>
+  ? TestView<S, E, A>
+  : never;
+
+type MaterializedDefaultViews<S, E> = {
+  [K in keyof DefaultViews<S, E>]: MaterializedDefaultView<
+    (DefaultViews<S, E>)[K]
+  >
+};
