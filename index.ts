@@ -5,9 +5,6 @@
 // NA = Next actions
 // A = Actions
 
-// ComposeSelectors must be associative
-type ComposeSelectors<S> = (first: S, second: S) => S;
-
 interface MaterializedTestView<E, A> {
   actions: MaterializedActions<E, A & DefaultActions<E>>;
 }
@@ -78,7 +75,7 @@ type MaterializedActions<E, A extends { [k: string]: Action<E> }> = {
 // light and efficient method. While an Enzyme adapter would allow selecting
 // elements by chaining Enzyme methods which is more flexible than XPath but
 // less efficient.
-export const makeTestViewConstructor = <S, E>(
+const makeTestViewConstructor = <S, E>(
   composeSelectors: ComposeSelectors<S>,
   actionRealizer: ActionMaterializer<S, E>,
   defaultViews: DefaultViews<S, E>
@@ -133,7 +130,7 @@ export const makeTestViewConstructor = <S, E>(
 
 // Create an action realizer by providing a way to run a selector and iterate
 // over selector results.
-export const makeActionMaterializer = <S, E, EG>(
+const makeActionMaterializer = <S, E, EG>(
   runSelector: (selector: S, root: E) => EG,
   forEachElement: <A extends Action<E>>(
     elements: EG,
@@ -141,6 +138,26 @@ export const makeActionMaterializer = <S, E, EG>(
   ) => ReturnType<A>[]
 ): ActionMaterializer<S, E> => (selector, action, root) => (...args) =>
   forEachElement(runSelector(selector, root), e => action(e, ...args));
+
+// ComposeSelectors must be associative
+export type ComposeSelectors<S> = (first: S, second: S) => S;
+export type RunSelector<S, E, EG> = (selector: S, root: E) => EG;
+export type IterateSelector<E, EG> = <A extends Action<E>>(
+  elements: EG,
+  fn: (e: E) => ReturnType<A>
+) => ReturnType<A>[];
+
+export const makeAdapter = <S, E, EG>(
+  composeSelectors: ComposeSelectors<S>,
+  runSelector: RunSelector<S, E, EG>,
+  iterateSelector: IterateSelector<E, EG>,
+  defaultViews: DefaultViews<S, E>
+) =>
+  makeTestViewConstructor<S, E>(
+    composeSelectors,
+    makeActionMaterializer<S, E, EG>(runSelector, iterateSelector),
+    defaultViews
+  );
 
 interface DefaultViews<S, E> {
   checkbox: TestView<

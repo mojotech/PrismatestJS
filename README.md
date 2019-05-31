@@ -115,14 +115,12 @@ results and returns a value. This function should run its input function on
 every result from the selector and collect the return values in an array. The
 function should return this array.
 
-### Construction Functions
+### Construction Function
 
-Prismatest exports two construction functions that should be used when
-constructing an adapter. The first is `makeActionMaterializer`, which takes the
-run selector and iterate selector functionality and returns an action
-materializer. The second is `makeTestViewConstructor`, which takes the selector
-composer and action materializer and returns the function used for constructing
-test views.
+Prismatest exports a single construction function named `makeAdapter` that
+should be used to construct the adapter. The types for the arguments to
+`makeAdapter` are also exported as `ComposeSelectors`, `RunSelector`,
+`IterateSelector`, and `DefaultViews`.
 
 ### CSS Adapter
 
@@ -144,9 +142,10 @@ const iterateSelector = (nodes, fn) => {
   return result;
 };
 
-export default makeTestViewConstructor(
+export default makeAdapter(
   composeSelectors,
-  makeActionMaterializer(runSelector, iterateSelector)
+  runSelector,
+  iterateSelector
 );
 ```
 
