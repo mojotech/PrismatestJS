@@ -1,5 +1,7 @@
 # Examples
 
+You can run the examples by running `yarn test`.
+
 ## Adapter.ts
 
 This file demonstrates how you would go about writing an adapter using
