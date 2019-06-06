@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Use test views to decouple tests from implementation details",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "author": "Mojotech",
   "license": "MIT",
   "devDependencies": {
