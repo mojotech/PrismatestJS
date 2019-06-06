@@ -19,7 +19,7 @@ interface TestView<S, E, A> {
 }
 
 interface TestViewConstructor<S, E> {
-  <A extends { [k: string]: Action<E> }>(selector: S, actions: A): TestView<
+  <A extends { [k: string]: Action<E> }>(selector: S, actions?: A): TestView<
     S,
     E,
     A
@@ -89,8 +89,9 @@ const makeTestViewConstructor = <S, E>(
   // always present to return the node(s) selected.
   const testView = <A extends { [k: string]: Action<E> }>(
     selector: S,
-    actions: A
+    actionsOpt?: A
   ): TestView<S, E, A> => {
+    const actions: A = actionsOpt || ({} as A);
     const view = <NA extends { [k: string]: Action<E> }>(
       nextView: TestView<S, E, NA>
     ): TestView<S, E, NA> =>
