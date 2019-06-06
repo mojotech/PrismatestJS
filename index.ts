@@ -203,8 +203,10 @@ export interface DefaultViews<S, E> {
     S,
     E,
     {
-      select: (e: E, value: string) => void;
-      getSelection: (e: E) => void;
+      // Select this radio button
+      select: (e: E) => void;
+      // Get the selected value from this radio button's group of radio buttons
+      getSelectedValue: (e: E) => string | null;
     }
   >;
   textInput: DefaultView<
