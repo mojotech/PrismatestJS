@@ -14,7 +14,6 @@ test("Changing the name updates the text", () => {
 
   act(() => { nameInput.materialize(root).actions.enterText(name); });
 
-  const greetingNode = greeting.materialize(root).actions.get();
-  expect(greetingNode.length).toEqual(1);
-  expect(greetingNode[0].textContent).toEqual("Hello World");
+  const greetingNode = greeting.materialize(root).actions.get.one();
+  expect(greetingNode.textContent).toEqual("Hello World");
 });
