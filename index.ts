@@ -49,9 +49,10 @@ type ActionParameters<E, F extends Action<E>> = Tail<Parameters<F>>;
 // Materializing an action involves filling in the element parameter with one
 // or many elements resulting from running a selector. When the action is run
 // it will have one or many copies of the return value.
-type MaterializedAction<E, A extends Action<E>> = (
-  ...args: ActionParameters<E, A>
-) => ReturnType<A>[];
+interface MaterializedAction<E, A extends Action<E>> {
+  (...args: ActionParameters<E, A>): ReturnType<A>[];
+  one(...args: ActionParameters<E, A>): ReturnType<A>;
+}
 
 // The action materializer runs the selector on the root and materializes the
 // actions given
@@ -153,6 +154,30 @@ const makeTestViewConstructor = <S, E>(
   return testView;
 };
 
+export class MultipleSelectedsElementError<S, E> extends Error {
+  selector: S;
+  root: E;
+
+  constructor(selector: S, root: E, ...args: any[]) {
+    super(...args);
+    this.name = 'MultipleSelectedElementsError';
+    this.selector = selector;
+    this.root = root;
+  }
+}
+
+export class ZeroSelectedElementsError<S, E> extends Error {
+  selector: S;
+  root: E;
+
+  constructor(selector: S, root: E, ...args: any[]) {
+    super(...args);
+    this.name = 'ZeroSelectedElementsError';
+    this.selector = selector;
+    this.root = root;
+  }
+}
+
 // Create an action realizer by providing a way to run a selector and iterate
 // over selector results.
 const makeActionMaterializer = <S, E, EG>(
@@ -161,8 +186,32 @@ const makeActionMaterializer = <S, E, EG>(
     elements: EG,
     fn: (e: E) => ReturnType<A>
   ) => ReturnType<A>[]
-): ActionMaterializer<S, E> => (selector, action, root) => (...args) =>
-  forEachElement(runSelector(selector, root), e => action(e, ...args));
+) => <A extends Action<E>>(
+  selector: S,
+  action: A,
+  root: E
+): MaterializedAction<E, A> => {
+  const base = (...args: ActionParameters<E, A>): ReturnType<A>[] =>
+    forEachElement(runSelector(selector, root), e => action(e, ...args));
+  base.one = (...args: ActionParameters<E, A>): ReturnType<A> => {
+    // This strategy does mean the elements are iterated twice. Until that
+    // becomes a problem I'll leave it.
+    const elements = forEachElement<(e: E) => E>(
+      runSelector(selector, root),
+      e => e
+    );
+
+    if (elements.length === 0) {
+      throw new ZeroSelectedElementsError(selector, root);
+    }
+    if (elements.length > 1) {
+      throw new MultipleSelectedsElementError(selector, root);
+    }
+
+    return elements.map<ReturnType<A>>(e => action(e, ...args))[0];
+  };
+  return base;
+};
 
 // ComposeSelectors must be associative
 export type ComposeSelectors<S> = (first: S, second: S) => S;

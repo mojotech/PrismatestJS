@@ -86,6 +86,10 @@ materialized.actions.click();
 All test views provide a default action called `get` which simply returns the
 underlying object selected by the view.
 
+All materialized actions have a `one` property which only runs the action and
+returns the result for the first selected element. If zero or multiple elements
+would be selected an error is thrown.
+
 ## Adapters
 
 Prismatest only provides the glue layer for constructing and combining test
