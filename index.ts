@@ -163,6 +163,7 @@ export class MultipleSelectedsElementError<S, E> extends Error {
     this.name = 'MultipleSelectedElementsError';
     this.selector = selector;
     this.root = root;
+    this.message = `Selector: ${selector} returned multiple elements at root: ${root}`
   }
 }
 
@@ -175,6 +176,7 @@ export class ZeroSelectedElementsError<S, E> extends Error {
     this.name = 'ZeroSelectedElementsError';
     this.selector = selector;
     this.root = root;
+    this.message = `Selector: ${selector} returned zero elements at root: ${root}`
   }
 }
 
