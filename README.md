@@ -90,6 +90,16 @@ All materialized actions have a `one` property which only runs the action and
 returns the result for the first selected element. If zero or multiple elements
 would be selected an error is thrown.
 
+All materialized actions have an `at` property which runs the action on the
+specified element of the element collection. For example, to select the second
+checkbox you might do:
+
+```js
+materialized.actions.checkbox.select.at(2);
+```
+
+Note that these are 1-indexed for better compatibility with HTML/CSS semantics.
+
 ## Adapters
 
 Prismatest only provides the glue layer for constructing and combining test

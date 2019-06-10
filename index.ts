@@ -52,6 +52,7 @@ type ActionParameters<E, F extends Action<E>> = Tail<Parameters<F>>;
 interface MaterializedAction<E, A extends Action<E>> {
   (...args: ActionParameters<E, A>): ReturnType<A>[];
   one(...args: ActionParameters<E, A>): ReturnType<A>;
+  at(n: number, ...args: ActionParameters<E, A>): ReturnType<A>;
 }
 
 // The action materializer runs the selector on the root and materializes the
@@ -180,6 +181,21 @@ export class ZeroSelectedElementsError<S, E> extends Error {
   }
 }
 
+export class IndexOutOfBoundsError<S, E> extends Error {
+  selector: S;
+  root: E;
+  index: number;
+
+  constructor(index: number, selector: S, root: E, ...args: any[]) {
+    super(...args);
+    this.name = 'IndexOutOfBoundsError';
+    this.selector = selector;
+    this.root = root;
+    this.index = index;
+    this.message = `Index: ${index} of Selector: ${selector} returned no element at root: ${root}`
+  }
+}
+
 // Create an action realizer by providing a way to run a selector and iterate
 // over selector results.
 const makeActionMaterializer = <S, E, EG>(
@@ -211,6 +227,22 @@ const makeActionMaterializer = <S, E, EG>(
     }
 
     return elements.map<ReturnType<A>>(e => action(e, ...args))[0];
+  };
+  base.at = (n: number, ...args: ActionParameters<E, A>): ReturnType<A> => {
+    const elements = forEachElement<(e: E) => E>(
+      runSelector(selector, root),
+      e => e
+    );
+    const offset = n-1;
+
+    if(elements.length === 0) {
+      throw new ZeroSelectedElementsError(selector, root);
+    }
+    if(elements[offset] === null || elements[offset] === undefined) {
+      throw new IndexOutOfBoundsError(n, selector, root);
+    }
+
+    return action(elements[offset], ...args);
   };
   return base;
 };
