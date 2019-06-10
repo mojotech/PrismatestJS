@@ -155,7 +155,7 @@ const makeTestViewConstructor = <S, E>(
   return testView;
 };
 
-export class MultipleSelectedsElementError<S, E> extends Error {
+export class MultipleSelectedElementsError<S, E> extends Error {
   selector: S;
   root: E;
 
@@ -223,7 +223,7 @@ const makeActionMaterializer = <S, E, EG>(
       throw new ZeroSelectedElementsError(selector, root);
     }
     if (elements.length > 1) {
-      throw new MultipleSelectedsElementError(selector, root);
+      throw new MultipleSelectedElementsError(selector, root);
     }
 
     return elements.map<ReturnType<A>>(e => action(e, ...args))[0];
