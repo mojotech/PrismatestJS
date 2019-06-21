@@ -18,7 +18,7 @@ interface TestView<S, E, A> {
   ): TestView<S, E, NA>;
 }
 
-interface TestViewConstructor<S, E> {
+export interface TestViewConstructor<S, E> {
   <A extends { [k: string]: Action<E> }>(selector: S, actions?: A): TestView<
     S,
     E,
