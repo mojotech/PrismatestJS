@@ -1,23 +1,20 @@
 # Javascript Node CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
+
+defaults: &defaults
+  working_directory: /tmp/prismatestjs
+  docker:
+    - image: circleci/node:11.14
+
 jobs:
   build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:11.14
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    working_directory: ~/repo
-
+    <<: *defaults
     steps:
       - checkout
+
+      - run: cp .npmrc.ci .npmrc
 
       # Download and cache dependencies
       - restore_cache:
@@ -33,5 +30,44 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
-      - run: yarn clean && yarn build
+      - run: yarn clean
+      - run: yarn build
+
+      - persist_to_workspace:
+           root: /tmp
+           paths:
+             - prismatestjs
+
+  ensure_version_bump:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Ensure version bump
+          command: |
+            ./scripts/npm_version_check.sh @mojotech/prismatest
+  publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Publish updated NPM package
+          command: |
+            npm publish
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - ensure_version_bump:
+          requires:
+            - build
+      - publish:
+          requires:
+            - ensure_version_bump
+          filters:
+            branches:
+              only: master
