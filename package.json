@@ -1,5 +1,5 @@
 {
-  "name": "PrismatestJS",
+  "name": "@mojotech/PrismatestJS",
   "version": "1.0.0",
   "description": "Use test views to decouple tests from implementation details",
   "main": "dist/index.js",
