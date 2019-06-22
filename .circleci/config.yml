@@ -1,71 +1,177 @@
 # Javascript Node CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
-version: 2
+version: 2.1
 
 defaults: &defaults
   working_directory: /tmp/prismatestjs
   docker:
     - image: circleci/node:11.14
 
-jobs:
-  build:
-    <<: *defaults
+commands:
+  # Copied from https://circleci.com/orbs/registry/orb/dnephin/multirepo
+  run-job-for-paths:
+    description: |
+      Continue running the job if any file in paths has been modified since
+      the last commit shared with the upstream git branch (default: origin/master).
+
+      This command must be run after `checkout`.
+
+      This command allows you to skip all of the subsequent steps in a job so that any
+      repository with multiple workflows, or multiple flows within a single
+      workflow, will only run CI jobs relevant to the files that changed.
+
+      If you have a multipurpose git repository with independent directory trees
+      this command allows you to run the tests for only the services which have been
+      modified relative to the upstream branch.
+
+    parameters:
+      paths:
+        type: string
+        description: |
+          A list of file paths used with 'git diff' to check for modification.
+      upstream_branch:
+        type: string
+        description: |
+          The upstream branch used with 'git merge-base' to find the most recent
+          commit shared by HEAD and the upstream branch.
+        default: origin/master
+      working_directory:
+        type: string
+        description: |
+          Directory to change to before executing the command.
+        default: "$PWD"
+      run_on_upstream:
+        type: boolean
+        description: |
+          When run_on_upstream is true, and HEAD matches the upstream_branch the
+          job always run. When false the job will not run when HEAD matches
+          the upstream_branch.
+        default: true
+    steps:
+      - run:
+          name: Check if job should run
+          command: |
+            cd << parameters.working_directory >>
+
+            upstream="$(git merge-base HEAD << parameters.upstream_branch >>)"
+            echo "Comparing to upstream commit $upstream"
+
+            <<# parameters.run_on_upstream >>
+            if [[ "$(git rev-parse HEAD)" == "$upstream" ]]; then
+              echo "HEAD matches upstream, running with no diff"
+              exit 0
+            fi
+            <</ parameters.run_on_upstream >>
+
+            if [[ -z "$upstream" ]]; then
+              echo "git merge-base failed"
+              exit 1
+            fi
+
+            # Print the diff
+            PAGER=cat git diff --stat=80 $upstream -- << parameters.paths >>
+
+            # Halt if no diff
+            if git diff --quiet $upstream -- << parameters.paths >>; then
+              echo "Skipping job, no files modified"
+              circleci-agent step halt
+            fi
+
+  build_package:
+    description: "Builds a Javascript package"
+    parameters:
+      location:
+        type: string
     steps:
       - checkout
+      - run-job-for-paths:
+          paths: << parameters.location >>
+          run_on_upstream: false
 
       - run: cp .npmrc.ci .npmrc
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-<< parameters.location >>-{{ checksum "<< parameters.location >>/package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: yarn install
+      - run: yarn --cwd << parameters.location >> install
 
       - save_cache:
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - << parameters.location >>/node_modules
+          key: v1-dependencies-<< parameters.location >>-{{ checksum "<< parameters.location >>/package.json" }}
 
-      - run: yarn clean
-      - run: yarn build
+      - run: yarn --cwd << parameters.location >> clean
+      - run: yarn --cwd << parameters.location >> build
 
       - persist_to_workspace:
            root: /tmp
            paths:
-             - prismatestjs
+             - prismatestjs/<< parameters.location >>
+
+jobs:
+  build:
+    <<: *defaults
+    description: "Builds a project or sub-project"
+    parameters:
+      location:
+        type: string
+    steps:
+      - build_package:
+          location: << parameters.location >>
 
   ensure_version_bump:
     <<: *defaults
+    description: "Ensures that the version has been bumped"
+    parameters:
+      location:
+        type: string
+      package:
+        type: string
     steps:
       - attach_workspace:
           at: /tmp
+      - run-job-for-paths:
+          paths: << parameters.location >>
+          run_on_upstream: false
       - run:
           name: Ensure version bump
           command: |
-            ./scripts/npm_version_check.sh @mojotech/prismatest
+            ./scripts/npm_version_check.sh << parameters.package >> << parameters.location >>
   publish:
     <<: *defaults
+    description: "Publishes a project or sub-project"
+    parameters:
+      location:
+        type: string
     steps:
       - attach_workspace:
           at: /tmp
+      - run-job-for-paths:
+          paths: << parameters.location >>
+          run_on_upstream: false
       - run:
           name: Publish updated NPM package
           command: |
-            npm publish
+            npm publish << parameters.location >>
 
 workflows:
   version: 2
-  build_and_deploy:
+  prismatest:
     jobs:
-      - build
+      - build:
+          location: ./
       - ensure_version_bump:
+          location: ./
+          package: "@mojotech/prismatest"
           requires:
             - build
       - publish:
+          location: ./
           requires:
             - ensure_version_bump
           filters:
