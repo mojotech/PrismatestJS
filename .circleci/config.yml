@@ -133,6 +133,7 @@ jobs:
       package:
         type: string
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp
       - run-job-for-paths:
@@ -149,6 +150,7 @@ jobs:
       location:
         type: string
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp
       - run-job-for-paths:
