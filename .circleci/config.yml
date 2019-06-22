@@ -41,13 +41,6 @@ commands:
         description: |
           Directory to change to before executing the command.
         default: "$PWD"
-      run_on_upstream:
-        type: boolean
-        description: |
-          When run_on_upstream is true, and HEAD matches the upstream_branch the
-          job always run. When false the job will not run when HEAD matches
-          the upstream_branch.
-        default: true
     steps:
       - run:
           name: Check if job should run
@@ -55,14 +48,16 @@ commands:
             cd << parameters.working_directory >>
 
             upstream="$(git merge-base HEAD << parameters.upstream_branch >>)"
-            echo "Comparing to upstream commit $upstream"
 
-            <<# parameters.run_on_upstream >>
             if [[ "$(git rev-parse HEAD)" == "$upstream" ]]; then
-              echo "HEAD matches upstream, running with no diff"
-              exit 0
+              echo "HEAD matches upstream, fetching last successful build commit"
+              upstream=$(curl --user $CIRCLE_TOKEN: \
+                https://circleci.com/api/v1.1/project/$VCS_TYPE/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?limit=1&filter=successful&shallow=true | \
+                grep '"vcs_revision" : ' | sed -E 's/"vcs_revision" ://' | sed -E 's/[[:punct:]]//g' | sed -E 's/ //g'
+              )
             fi
-            <</ parameters.run_on_upstream >>
+
+            echo "Comparing to upstream commit $upstream"
 
             if [[ -z "$upstream" ]]; then
               echo "git merge-base failed"
@@ -87,7 +82,6 @@ commands:
       - checkout
       - run-job-for-paths:
           paths: << parameters.location >>
-          run_on_upstream: false
 
       - run: cp .npmrc.ci .npmrc
 
@@ -138,7 +132,6 @@ jobs:
           at: /tmp
       - run-job-for-paths:
           paths: << parameters.location >>
-          run_on_upstream: false
       - run:
           name: Ensure version bump
           command: |
@@ -155,7 +148,6 @@ jobs:
           at: /tmp
       - run-job-for-paths:
           paths: << parameters.location >>
-          run_on_upstream: false
       - run:
           name: Publish updated NPM package
           command: |
