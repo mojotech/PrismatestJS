@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Description:
 ## This script will read the current version number from
 ## the `package.json` file and compare it to the latest
