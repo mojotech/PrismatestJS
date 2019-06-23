@@ -68,11 +68,29 @@ function compare-version {
   echo 0
 }
 
+function existsCheck() {
+    ELINE=$(npm show $PACKAGENAME version 2>&1 | grep "404.*$PACKAGENAME.*is not in the npm registry")
+
+    if [[ -n "$ELINE" ]]; then
+        echo 1; return 0;
+    else
+        echo 0; return 0;
+    fi
+}
+
 function versionCheck() {
   echo "Checking pacakge version bump"
 
   newVersion=$( grep '"version":' ${packageMeta} | cut -d\" -f4 )
   echo "  current version:    ${newVersion}"
+
+  exists=$(existsCheck)
+
+  # does not exist
+  if [[ $exists -eq 1 ]]; then
+      echo "* Package does not exist, version ok"
+      exit 0
+  fi
 
   npmVersion=$( npm show $PACKAGENAME version )
   echo "  latest NPM version: ${npmVersion}"
