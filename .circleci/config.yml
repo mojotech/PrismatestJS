@@ -142,6 +142,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp
+      - run: cp .npmrc.ci .npmrc
+
       - run-job-for-paths:
           paths: << parameters.location >>
       - run:
@@ -158,6 +160,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp
+      - run: cp .npmrc.ci .npmrc
+
       - run-job-for-paths:
           paths: << parameters.location >>
       - run:
