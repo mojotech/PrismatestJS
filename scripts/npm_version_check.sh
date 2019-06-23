@@ -14,7 +14,7 @@ PACKAGENAME=$1
 PACKAGELOCATION=$2
 
 scriptPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-packageMeta="${scriptPath}/../${PACKAGELOCATION}package.json"
+packageMeta="${scriptPath}/../${PACKAGELOCATION}/package.json"
 echo "package.json path: ${packageMeta}"
 
 SEMVER_REGEX="^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(\\-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
