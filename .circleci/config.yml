@@ -171,3 +171,19 @@ workflows:
           filters:
             branches:
               only: master
+  prismatest-css:
+    jobs:
+      - build:
+          location: ./adapters/prismatestjs-css
+      - ensure_version_bump:
+          location: ./adapters/prismatestjs-css
+          package: "@mojotech/prismatest-css"
+          requires:
+            - build
+      - publish:
+          location: ./adapters/prismatestjs-css
+          requires:
+            - ensure_version_bump
+          filters:
+            branches:
+              only: master
