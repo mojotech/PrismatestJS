@@ -4,7 +4,7 @@ import {
   RunSelector,
   IterateSelector,
   DefaultViews
-} from 'PrismatestJS';
+} from '@mojotech/prismatest';
 import { Simulate } from "react-dom/test-utils";
 
 // This adapter works with CSS selectors and raw HTMLElements
