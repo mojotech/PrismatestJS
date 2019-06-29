@@ -1,0 +1,30 @@
+{
+  "name": "@mojotech/prismatest-adapter-tests",
+  "version": "0.1.0",
+  "description": "Tests for the adapters used with the Prismatest library",
+  "author": "Mojotech",
+  "license": "MIT",
+  "main": "dist/default-test-views.js",
+  "types": "dist/default-test-views.d.ts",
+  "dependencies": {
+    "@mojotech/prismatest": "^0.1.2",
+    "jest": "^24.8.0",
+    "react": "^16.8.6"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/react": "^16.8.19",
+    "prettier": "^1.17.1",
+    "typescript": "^3.5.1"
+  },
+  "scripts": {
+    "ts": "tsc --listFiles -w --noEmit",
+    "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
+    "clean": "rm -rf ./dist",
+    "format": "prettier --write *.{ts,tsx}"
+  },
+  "files": [
+      "dist/default-test-views.js",
+      "dist/default-test-views.d.ts"
+  ]
+}

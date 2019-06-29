@@ -203,3 +203,19 @@ workflows:
           filters:
             branches:
               only: master
+  prismatest-tests:
+    jobs:
+      - build:
+          location: ./adapters/prismatestjs-adapter-tests
+      - ensure_version_bump:
+          location: ./adapters/prismatestjs-adapter-tests
+          package: "@mojotech/prismatest-adapter-tests"
+          requires:
+            - build
+      - publish:
+          location: ./adapters/prismatestjs-adapter-tests
+          requires:
+            - ensure_version_bump
+          filters:
+            branches:
+              only: master
