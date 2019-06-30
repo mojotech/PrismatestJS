@@ -5,7 +5,7 @@ import {
   IterateSelector,
   DefaultViews
 } from '@mojotech/prismatest';
-import { Simulate } from "react-dom/test-utils";
+import { Simulate } from 'react-dom/test-utils';
 
 // This adapter works with CSS selectors and raw HTMLElements
 type SelectorType = string;
@@ -16,13 +16,13 @@ type ElementGroupType = NodeListOf<HTMLElement>;
 // selectors should effectively take the cartesian product of all selectors
 // separated by commas.
 const composeSelectors: ComposeSelectors<SelectorType> = (a, b) => {
-  const aSplits = a.split(",");
-  const bSplits = b.split(",");
-  const product: string[] = aSplits.map(u => bSplits.map(v => u.trim() + ' ' + v.trim())).reduce((a, b) => (
-    a.concat(b)
-  ), []);
-  return product.join(",");
-}
+  const aSplits = a.split(',');
+  const bSplits = b.split(',');
+  const product: string[] = aSplits
+    .map(u => bSplits.map(v => u.trim() + ' ' + v.trim()))
+    .reduce((a, b) => a.concat(b), []);
+  return product.join(',');
+};
 
 const runSelector: RunSelector<SelectorType, ElementType, ElementGroupType> = (
   selector,
@@ -78,7 +78,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     }
   },
   singleSelect: {
-    selector: "select:not([multiple])",
+    selector: 'select:not([multiple])',
     actions: {
       select: (e, value) => {
         const option = (e as HTMLSelectElement).namedItem(value);
@@ -87,18 +87,18 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         }
         Simulate.change(e);
       },
-      getSelection: (e) => (e as HTMLSelectElement).value
+      getSelection: e => (e as HTMLSelectElement).value
     }
   },
   multiSelect: {
-    selector: "select[multiple]",
+    selector: 'select[multiple]',
     actions: {
       select: (e, values) => {
         const options = (e as HTMLSelectElement).options;
         for(let i = 0; i++; i < options.length) {
           const option = options.item(i);
-          if(option) {
-            if(values.includes(option.value)) {
+          if (option) {
+            if (values.includes(option.value)) {
               option.selected = true;
             } else {
               option.selected = false;
@@ -121,9 +121,9 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     }
   },
   form: {
-    selector: "form",
+    selector: 'form',
     actions: {
-      submit: (e) => {
+      submit: e => {
         Simulate.submit(e);
       }
     }
@@ -131,7 +131,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
   button: {
     selector: "button, input[type='button'], input[type='submit']",
     actions: {
-      click: (e) => {
+      click: e => {
         Simulate.click(e);
       }
     }
