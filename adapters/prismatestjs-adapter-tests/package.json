@@ -1,6 +1,6 @@
 {
   "name": "@mojotech/prismatest-adapter-tests",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tests for the adapters used with the Prismatest library",
   "author": "Mojotech",
   "license": "MIT",
@@ -21,7 +21,8 @@
     "ts": "tsc --listFiles -w --noEmit",
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
     "clean": "rm -rf ./dist",
-    "format": "prettier --write *.{ts,tsx}"
+    "format": "prettier --write *.{ts,tsx}",
+    "test": "echo 'No tests!'"
   },
   "files": [
       "dist/default-test-views.js",

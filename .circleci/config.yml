@@ -113,6 +113,7 @@ commands:
 
       - run: yarn --cwd << parameters.location >> clean
       - run: yarn --cwd << parameters.location >> build
+      - run: yarn --cwd << parameters.location >> test
 
       - persist_to_workspace:
            root: /tmp

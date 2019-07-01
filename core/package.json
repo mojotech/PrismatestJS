@@ -1,6 +1,6 @@
 {
   "name": "@mojotech/prismatest",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Use test views to decouple tests from implementation details",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -14,7 +14,8 @@
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
     "ts": "tsc --listFiles -w --noEmit",
     "clean": "rm -rf ./dist",
-    "format": "prettier --write index.ts"
+    "format": "prettier --write index.ts",
+    "test": "echo 'No tests!'"
   },
   "files": [
     "dist/index.js",
