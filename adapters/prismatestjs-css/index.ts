@@ -46,15 +46,19 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
   checkbox: {
     selector: "input[type='checkbox']",
     actions: {
-      toggle: (e) => { Simulate.click(e); },
-      isChecked: (e) => (e as HTMLInputElement).checked,
-      getValue: (e) => (e as HTMLInputElement).value
+      toggle: e => {
+        (e as HTMLInputElement).checked = !(e as HTMLInputElement).checked;
+      },
+      isChecked: e => (e as HTMLInputElement).checked,
+      getValue: e => (e as HTMLInputElement).value
     }
   },
   radio: {
     selector: "input[type='radio']",
     actions: {
-      select: (e) => { Simulate.click(e); },
+      select: e => {
+        (e as HTMLInputElement).checked = true;
+      },
       // There's lots of casting in this function. That's a bit unfortunate but
       // I don't see a great way around it. The failure mode if the casts fail
       // here are that properties/methods are not available on the selected
@@ -73,7 +77,9 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
   textInput: {
     selector: "input[type='text'], textarea",
     actions: {
-      enterText: (e, text) => { (e as HTMLInputElement).value = text; Simulate.change(e); },
+      enterText: (e, text) => {
+        (e as HTMLInputElement).value = text;
+      },
       getText: (e) => (e as HTMLInputElement).value
     }
   },
@@ -85,7 +91,6 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         if (option) {
           (e as HTMLSelectElement).selectedIndex = option.index;
         }
-        Simulate.change(e);
       },
       getSelection: e => (e as HTMLSelectElement).value
     }
@@ -105,7 +110,6 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
             }
           }
         }
-        Simulate.change(e);
       },
       getSelection: (e) => {
         const selected = (e as HTMLSelectElement).selectedOptions;
