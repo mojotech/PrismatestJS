@@ -42,6 +42,19 @@ const iterateSelector: IterateSelector<ElementType, ElementGroupType> = (
   return result;
 };
 
+const findSelectOption = (
+  options: HTMLOptionsCollection,
+  value: string
+): HTMLOptionElement | null => {
+  for (let i = 0; i < options.length; i++) {
+    const o = options[i];
+    if (o.value === value) {
+      return o;
+    }
+  }
+  return null;
+};
+
 const defaultViews: DefaultViews<SelectorType, ElementType> = {
   checkbox: {
     selector: "input[type='checkbox']",
@@ -99,7 +112,10 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     selector: 'select:not([multiple])',
     actions: {
       select: (e, value) => {
-        const option = (e as HTMLSelectElement).namedItem(value);
+        const option = findSelectOption(
+          (e as HTMLSelectElement).options,
+          value
+        );
         if (option) {
           (e as HTMLSelectElement).selectedIndex = option.index;
         }
