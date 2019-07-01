@@ -64,11 +64,23 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       // here are that properties/methods are not available on the selected
       // element. This isn't the best, but there's no way to statically assure
       // the selected element is of the proper interface.
-      getSelectedValue: (e) => {
-        const form = (e as HTMLInputElement).form;
-        const radios = form && form.elements.namedItem((e as HTMLInputElement).name || e.id);
-        if (radios && (radios as RadioNodeList).value) {
-          return (radios as RadioNodeList).value;
+      getSelectedValue: e => {
+        const parent = e.parentNode;
+        // I think there's some inconsistencies with jsdom's implementation that
+        // makes RadioNodeList (and the associated methods of fetching it from a
+        // form) not work reliably. So I do it this way.
+        const radios =
+          parent &&
+          parent.querySelectorAll(
+            `input[type='radio'][name='${(e as HTMLInputElement).name || e.id}'`
+          );
+        if (radios) {
+          for (let i = 0; i < radios.length; i++) {
+            const r = radios[i];
+            if (r && (r as HTMLInputElement).checked) {
+              return (r as HTMLInputElement).value;
+            }
+          }
         }
         return null;
       }
