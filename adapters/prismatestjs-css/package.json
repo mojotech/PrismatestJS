@@ -8,18 +8,24 @@
   "license": "MIT",
   "dependencies": {
     "@mojotech/prismatest": "^0.1.2",
+    "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.13",
     "@types/react-dom": "^16.8.4",
+    "jest": "^24.8.0",
     "prettier": "^1.17.1",
-    "typescript": "^3.5.1"
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1",
+    "@mojotech/prismatest-adapter-tests": "^0.1.0"
   },
   "scripts": {
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
     "clean": "rm -rf ./dist",
     "ts": "tsc --listFiles -w --noEmit",
-    "format": "prettier --write *.ts"
+    "format": "prettier --write *.ts",
+    "test": "jest"
   },
   "files": [
     "dist/index.js",
