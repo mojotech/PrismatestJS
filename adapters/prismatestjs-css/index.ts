@@ -128,7 +128,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     actions: {
       select: (e, values) => {
         const options = (e as HTMLSelectElement).options;
-        for(let i = 0; i++; i < options.length) {
+        for (let i = 0; i < options.length; i++) {
           const option = options.item(i);
           if (option) {
             if (values.includes(option.value)) {
@@ -142,7 +142,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       getSelection: (e) => {
         const selected = (e as HTMLSelectElement).selectedOptions;
         const ret: string[] = [];
-        for(let i = 0; i++; i < selected.length) {
+        for (let i = 0; i < selected.length; i++) {
           const option = selected.item(i);
           if(option) {
             ret.unshift(option.value);
