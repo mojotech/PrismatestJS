@@ -139,13 +139,13 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
           }
         }
       },
-      getSelection: (e) => {
-        const selected = (e as HTMLSelectElement).selectedOptions;
+      getSelection: e => {
+        const selected = (e as HTMLSelectElement).options;
         const ret: string[] = [];
         for (let i = 0; i < selected.length; i++) {
           const option = selected.item(i);
-          if(option) {
-            ret.unshift(option.value);
+          if (option && option.selected) {
+            ret.push(option.value);
           }
         }
         return ret;
