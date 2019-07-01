@@ -105,7 +105,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       enterText: (e, text) => {
         (e as HTMLInputElement).value = text;
       },
-      getText: (e) => (e as HTMLInputElement).value
+      getText: e => (e as HTMLInputElement).value
     }
   },
   singleSelect: {
