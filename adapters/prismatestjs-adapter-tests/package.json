@@ -9,10 +9,12 @@
   "dependencies": {
     "@mojotech/prismatest": "^0.1.2",
     "jest": "^24.8.0",
+    "jest-expect-message": "^1.0.2",
     "react": "^16.8.6"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
+    "@types/jest-expect-message": "^1.0.0",
     "@types/react": "^16.8.19",
     "prettier": "^1.17.1",
     "typescript": "^3.5.1"
@@ -25,7 +27,7 @@
     "test": "echo 'No tests!'"
   },
   "files": [
-      "dist/default-test-views.js",
-      "dist/default-test-views.d.ts"
+    "dist/default-test-views.js",
+    "dist/default-test-views.d.ts"
   ]
 }

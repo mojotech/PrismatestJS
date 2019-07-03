@@ -3,6 +3,7 @@ import {
   TestViewConstructor,
   MultipleSelectedElementsError
 } from '@mojotech/prismatest';
+import 'jest-expect-message';
 
 export const generateTests = <S, E>(
   adapter: TestViewConstructor<S, E>,
@@ -20,9 +21,15 @@ export const generateTests = <S, E>(
         render(unchecked)
       );
 
-      expect(materialized.actions.isChecked.one()).toEqual(false);
+      expect(
+        materialized.actions.isChecked.one(),
+        'Checkbox should be unchecked'
+      ).toEqual(false);
       materialized.actions.toggle();
-      expect(materialized.actions.isChecked.one()).toEqual(true);
+      expect(
+        materialized.actions.isChecked.one(),
+        'Checkbox should be checked'
+      ).toEqual(true);
     });
 
     test('checking a checked checkbox unchecks it', () => {
@@ -30,9 +37,15 @@ export const generateTests = <S, E>(
         render(checked)
       );
 
-      expect(materialized.actions.isChecked.one()).toEqual(true);
+      expect(
+        materialized.actions.isChecked.one(),
+        'Checkbox should be checked'
+      ).toEqual(true);
       materialized.actions.toggle();
-      expect(materialized.actions.isChecked.one()).toEqual(false);
+      expect(
+        materialized.actions.isChecked.one(),
+        'Checkbox should be unchecked'
+      ).toEqual(false);
     });
 
     test('can get value from checked or unchecked checkboxes', () => {
@@ -43,8 +56,14 @@ export const generateTests = <S, E>(
         render(unchecked)
       );
 
-      expect(checkedM.actions.getValue.one()).toEqual(checkboxValue);
-      expect(uncheckedM.actions.getValue.one()).toEqual(checkboxValue);
+      expect(
+        checkedM.actions.getValue.one(),
+        'Checked checkbox should have value'
+      ).toEqual(checkboxValue);
+      expect(
+        uncheckedM.actions.getValue.one(),
+        'Unchecked checkbox should have value'
+      ).toEqual(checkboxValue);
     });
   });
 
@@ -67,9 +86,15 @@ export const generateTests = <S, E>(
         render(radios)
       );
 
-      expect(materialized.actions.getSelectedValue.at(1)).toBeNull();
+      expect(
+        materialized.actions.getSelectedValue.at(1),
+        'Radio button should have no selected value'
+      ).toBeNull();
       materialized.actions.select.at(1);
-      expect(materialized.actions.getSelectedValue.at(1)).toEqual(value1);
+      expect(
+        materialized.actions.getSelectedValue.at(1),
+        'Radio button should have selected value'
+      ).toEqual(value1);
     });
 
     test('selecting a different value deselects the first one', () => {
@@ -78,9 +103,15 @@ export const generateTests = <S, E>(
       );
 
       materialized.actions.select.at(1);
-      expect(materialized.actions.getSelectedValue.at(1)).toEqual(value1);
+      expect(
+        materialized.actions.getSelectedValue.at(1),
+        'Radio button should have selected value'
+      ).toEqual(value1);
       materialized.actions.select.at(2);
-      expect(materialized.actions.getSelectedValue.at(1)).toEqual(value2);
+      expect(
+        materialized.actions.getSelectedValue.at(1),
+        'Radio button should have selected value'
+      ).toEqual(value2);
     });
   });
 
@@ -96,9 +127,15 @@ export const generateTests = <S, E>(
       const testText = 'test-text';
       const materialized = adapter.defaultViews.textInput.materialize(inputs);
 
-      expect(materialized.actions.getText()).toEqual(['', '']);
+      expect(
+        materialized.actions.getText(),
+        'Text input and textarea should have no text'
+      ).toEqual(['', '']);
       materialized.actions.enterText(testText);
-      expect(materialized.actions.getText()).toEqual([testText, testText]);
+      expect(
+        materialized.actions.getText(),
+        'Text input and textarea should have values'
+      ).toEqual([testText, testText]);
     });
   });
 
@@ -133,9 +170,15 @@ export const generateTests = <S, E>(
           render(selectSingle)
         );
 
-        expect(materialized.actions.getSelection.one()).toEqual('');
+        expect(
+          materialized.actions.getSelection.one(),
+          'Single select should have no selection'
+        ).toEqual('');
         materialized.actions.select(testValue1);
-        expect(materialized.actions.getSelection.one()).toEqual(testValue1);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Single select should have selection'
+        ).toEqual(testValue1);
       });
 
       test('selecting a value replaces the old value', () => {
@@ -144,9 +187,15 @@ export const generateTests = <S, E>(
         );
 
         materialized.actions.select(testValue1);
-        expect(materialized.actions.getSelection.one()).toEqual(testValue1);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Single select should have selection'
+        ).toEqual(testValue1);
         materialized.actions.select(testValue2);
-        expect(materialized.actions.getSelection.one()).toEqual(testValue2);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Single select should have selection'
+        ).toEqual(testValue2);
       });
 
       test('does not select the multi-select', () => {
@@ -154,9 +203,10 @@ export const generateTests = <S, E>(
           render(selects)
         );
 
-        expect(() => materialized.actions.get.one()).not.toThrow(
-          MultipleSelectedElementsError
-        );
+        expect(
+          () => materialized.actions.get.one(),
+          'Selector selected multiple elements'
+        ).not.toThrow(MultipleSelectedElementsError);
       });
     });
 
@@ -166,12 +216,15 @@ export const generateTests = <S, E>(
           render(selectMultiple)
         );
 
-        expect(materialized.actions.getSelection.one()).toEqual([]);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Multiple select should have no selections'
+        ).toEqual([]);
         materialized.actions.select([testValue1, testValue3]);
-        expect(materialized.actions.getSelection.one()).toEqual([
-          testValue1,
-          testValue3
-        ]);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Multiple select should have selections'
+        ).toEqual([testValue1, testValue3]);
       });
 
       test('selecting some values replaces the old values', () => {
@@ -180,15 +233,15 @@ export const generateTests = <S, E>(
         );
 
         materialized.actions.select([testValue1, testValue2]);
-        expect(materialized.actions.getSelection.one()).toEqual([
-          testValue1,
-          testValue2
-        ]);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Multiple select should have selections'
+        ).toEqual([testValue1, testValue2]);
         materialized.actions.select([testValue2, testValue3]);
-        expect(materialized.actions.getSelection.one()).toEqual([
-          testValue2,
-          testValue3
-        ]);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Multiple select should have selections'
+        ).toEqual([testValue2, testValue3]);
       });
 
       test('selecting no values returns no values', () => {
@@ -197,12 +250,15 @@ export const generateTests = <S, E>(
         );
 
         materialized.actions.select([testValue1, testValue2]);
-        expect(materialized.actions.getSelection.one()).toEqual([
-          testValue1,
-          testValue2
-        ]);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Multiple select should have selections'
+        ).toEqual([testValue1, testValue2]);
         materialized.actions.select([]);
-        expect(materialized.actions.getSelection.one()).toEqual([]);
+        expect(
+          materialized.actions.getSelection.one(),
+          'Multiple select should have no selections'
+        ).toEqual([]);
       });
 
       test('does not select the single-select', () => {
@@ -210,9 +266,10 @@ export const generateTests = <S, E>(
           render(selects)
         );
 
-        expect(() => materialized.actions.get.one()).not.toThrow(
-          MultipleSelectedElementsError
-        );
+        expect(
+          () => materialized.actions.get.one(),
+          'Selector selected multiple elements'
+        ).not.toThrow(MultipleSelectedElementsError);
       });
     });
   });
@@ -230,9 +287,9 @@ export const generateTests = <S, E>(
     test('calls submit handler', () => {
       const materialized = adapter.defaultViews.form.materialize(render(form));
 
-      expect(flag).toEqual(false);
+      expect(flag, 'Should not have called submit handler').toEqual(false);
       materialized.actions.submit.one();
-      expect(flag).toEqual(true);
+      expect(flag, 'Should have called submit handler').toEqual(true);
     });
   });
 
@@ -274,9 +331,9 @@ export const generateTests = <S, E>(
         .form(adapter.defaultViews.button)
         .materialize(render(buttons));
 
-      expect(tagFlag).toEqual(false);
+      expect(tagFlag, 'Should not have called click handler').toEqual(false);
       materialized.actions.click.at(1);
-      expect(tagFlag).toEqual(true);
+      expect(tagFlag, 'Should have called click handler').toEqual(true);
     });
 
     test('calls click handler of button input', () => {
@@ -284,9 +341,9 @@ export const generateTests = <S, E>(
         .form(adapter.defaultViews.button)
         .materialize(render(buttons));
 
-      expect(inputFlag).toEqual(false);
+      expect(inputFlag, 'Should not have called click handler').toEqual(false);
       materialized.actions.click.at(2);
-      expect(inputFlag).toEqual(true);
+      expect(inputFlag, 'Should have called click handler').toEqual(true);
     });
 
     test('calls click handler of submit button', () => {
@@ -294,9 +351,9 @@ export const generateTests = <S, E>(
         .form(adapter.defaultViews.button)
         .materialize(render(buttons));
 
-      expect(submitFlag).toEqual(false);
+      expect(submitFlag, 'Should not have called click handler').toEqual(false);
       materialized.actions.click.at(3);
-      expect(submitFlag).toEqual(true);
+      expect(submitFlag, 'Should have called click handler').toEqual(true);
     });
   });
 };
