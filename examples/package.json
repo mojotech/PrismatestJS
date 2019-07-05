@@ -20,7 +20,7 @@
   },
   "scripts": {
     "ts": "tsc --listFiles -w --noEmit",
-    "format": "prettier --write *.ts",
+    "format": "prettier --write *.{ts,tsx}",
     "build": "echo 'No build!'",
     "clean": "echo 'No clean!'",
     "test": "jest"
