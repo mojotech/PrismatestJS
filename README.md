@@ -15,10 +15,13 @@ your specifications.
 ## Available Adapters
 
 * CSS adapter `@mojotech/prismatest-css`
+
     Uses CSS selectors to find elements to interact with and native DOM APIs to
     manipulate them. This adapter is useful when you don't want your tests to
     know they're working with React.
+
 * Enzyme adapter `@mojotech/prismatest-enzyme`
+
     Uses Enzyme to select find and manipulate elements. Sometimes Enzyme
     doesn't expose the functionality required to manipulate raw DOM elements,
     so native DOM APIs are also used here for those cases. This adapter is
