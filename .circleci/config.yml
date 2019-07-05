@@ -236,3 +236,7 @@ workflows:
           filters:
             branches:
               only: master
+  prismatest-examples:
+    jobs:
+      - build:
+          location: ./examples
