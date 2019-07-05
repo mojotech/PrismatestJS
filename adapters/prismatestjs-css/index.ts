@@ -87,7 +87,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         const radios =
           parent &&
           parent.querySelectorAll(
-            `input[type='radio'][name='${(e as HTMLInputElement).name || e.id}'`
+            `:scope > input[type='radio'][name='${(e as HTMLInputElement).name || e.id}'`
           );
         if (radios) {
           for (let i = 0; i < radios.length; i++) {
