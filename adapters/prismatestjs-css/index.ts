@@ -61,6 +61,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     actions: {
       toggle: e => {
         (e as HTMLInputElement).checked = !(e as HTMLInputElement).checked;
+        Simulate.change(e, { currentTarget: e,  target: e });
       },
       isChecked: e => (e as HTMLInputElement).checked,
       getValue: e => (e as HTMLInputElement).value
@@ -71,6 +72,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     actions: {
       select: e => {
         (e as HTMLInputElement).checked = true;
+        Simulate.change(e, { currentTarget: e,  target: e });
       },
       // There's lots of casting in this function. That's a bit unfortunate but
       // I don't see a great way around it. The failure mode if the casts fail
@@ -104,6 +106,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     actions: {
       enterText: (e, text) => {
         (e as HTMLInputElement).value = text;
+        Simulate.change(e, { currentTarget: e, target: e });
       },
       getText: e => (e as HTMLInputElement).value
     }
@@ -118,6 +121,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         );
         if (option) {
           (e as HTMLSelectElement).selectedIndex = option.index;
+          Simulate.change(e, { currentTarget: e, target: e });
         }
       },
       getSelection: e => (e as HTMLSelectElement).value
@@ -128,15 +132,20 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     actions: {
       select: (e, values) => {
         const options = (e as HTMLSelectElement).options;
+        let shouldChange = false;
         for (let i = 0; i < options.length; i++) {
           const option = options.item(i);
           if (option) {
+            shouldChange = true;
             if (values.includes(option.value)) {
               option.selected = true;
             } else {
               option.selected = false;
             }
           }
+        }
+        if (shouldChange) {
+          Simulate.change(e, { currentTarget: e, target: e });
         }
       },
       getSelection: e => {
