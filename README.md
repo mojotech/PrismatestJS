@@ -25,6 +25,59 @@ your specifications.
     useful when finding elements by React component type or props is the most
     efficient way to test.
 
+## Quickstart
+
+1. Install an adapter (e.g. `@mojotech/prismatest-css`):
+
+    ```bash
+    yarn install --dev @mojotech/prismatest-css
+    ```
+
+2. Use some of the default test views to interact with your app:
+
+    ```javascript
+    // See examples for full source
+    import testView from '@mojotech/prismatest-css';
+
+    test('User can fill out form', () => {
+      const app = render(<App />);
+      const form = testView.defaultViews.form.materialize(app);
+      const formInputs = testView.defaultViews.textInput.materialize(app);
+
+      formInputs.actions.enterText.at(1, 'John Doe');
+      formInputs.actions.enterText.at(2, 'john@example.com');
+
+      form.actions.submit();
+    });
+    ```
+
+3. Write your own test views!
+
+    ```javascript
+    // See examples for full source
+    import testView from "@mojotech/prismatest-css";
+
+    const NameInput = testView("label[for='name']")(
+      testView.defaultViews.textInput
+    );
+    const FormErrors = NameInput(
+      testView('+ .error', { errorText: e => e.textContent })
+    );
+
+    test('User must fill out name', () => {
+      const app = render(<App />);
+      const form = testView.defaultViews.form.materialize(app);
+      const formErrors = FormErrors.materialize(app);
+      const nameInput = NameInput.materialize(app);
+
+      form.actions.submit();
+      expect(formErrors.actions.errorText.one()).toEqual('Name is required');
+      nameInput.actions.enterText.one('John Doe');
+      form.actions.submit();
+      expect(formErrors.actions.errorText()).toEqual([]);
+    });
+    ```
+
 ## Test Views
 
 Constructing a test view requires two parameters: a selector, and a dictionary
