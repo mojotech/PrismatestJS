@@ -1,18 +1,41 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import testView from "@mojotech/prismatest-css";
-import App from "./usage";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import testView from '@mojotech/prismatest-css';
+import App from './usage';
 
-const nameInput = testView("label#name")(testView.defaultViews.textInput);
-const greeting = testView("h1#greeting");
-
-test("Changing the name updates the text", () => {
-  const name = "World";
+const render = (c: React.ReactElement) => {
   const root = document.createElement('div');
-  ReactDOM.render(<App />, root);
+  ReactDOM.render(c, root);
+  return root;
+};
 
-  nameInput.materialize(root).actions.enterText(name);
+test('User can fill out form', () => {
+  const app = render(<App />);
+  const form = testView.defaultViews.form.materialize(app);
+  const formInputs = testView.defaultViews.textInput.materialize(app);
 
-  const greetingNode = greeting.materialize(root).actions.get.one();
-  expect(greetingNode.textContent).toEqual("Hello World");
+  formInputs.actions.enterText.at(1, 'John Doe');
+  formInputs.actions.enterText.at(2, 'john@example.com');
+
+  form.actions.submit();
+});
+
+const NameInput = testView("label[for='name']")(
+  testView.defaultViews.textInput
+);
+const FormErrors = NameInput(
+  testView('+ .error', { errorText: e => e.textContent })
+);
+
+test('User must fill out name', () => {
+  const app = render(<App />);
+  const form = testView.defaultViews.form.materialize(app);
+  const formErrors = FormErrors.materialize(app);
+  const nameInput = NameInput.materialize(app);
+
+  form.actions.submit();
+  expect(formErrors.actions.errorText.one()).toEqual('Name is required');
+  nameInput.actions.enterText.one('John Doe');
+  form.actions.submit();
+  expect(formErrors.actions.errorText()).toEqual([]);
 });
