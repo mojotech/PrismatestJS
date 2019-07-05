@@ -220,3 +220,19 @@ workflows:
           filters:
             branches:
               only: master
+  prismatest-enzyme:
+    jobs:
+      - build:
+          location: ./adapters/prismatestjs-enzyme
+      - ensure_version_bump:
+          location: ./adapters/prismatestjs-enzyme
+          package: "@mojotech/prismatest-enzyme"
+          requires:
+            - build
+      - publish:
+          location: ./adapters/prismatestjs-enzyme
+          requires:
+            - ensure_version_bump
+          filters:
+            branches:
+              only: master

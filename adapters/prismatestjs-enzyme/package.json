@@ -1,0 +1,39 @@
+{
+  "name": "@mojotech/prismatest-enzyme",
+  "version": "0.1.0",
+  "description": "Enzyme adapter for use with @mojotech/prismatest",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Mojotech",
+  "license": "MIT",
+  "dependencies": {
+    "@mojotech/prismatest": "^0.1.3",
+    "enzyme": "^3.9.0"
+  },
+  "devDependencies": {
+    "@mojotech/prismatest-adapter-tests": "^0.1.2",
+    "@types/enzyme": "^3.9.3",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/jest": "^24.0.13",
+    "@types/react": "^16.8.22",
+    "@types/react-dom": "^16.8.4",
+    "enzyme-adapter-react-16": "^1.14.0",
+    "jest": "^24.8.0",
+    "prettier": "^1.17.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1"
+  },
+  "scripts": {
+    "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
+    "clean": "rm -rf ./dist",
+    "ts": "tsc --listFiles -w --noEmit",
+    "format": "prettier --write *.ts",
+    "test": "jest"
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ]
+}
