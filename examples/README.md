@@ -2,12 +2,6 @@
 
 You can run the examples by running `yarn test`.
 
-## Adapter.ts
-
-This file demonstrates how you would go about writing an adapter using
-PrismatestJS. The example adapter uses CSS selectors to locate elements and uses
-the Simulate React test utility to interact with them.
-
 ## Usage.test.tsx
 
 This file demonstrates how you would use the adapter to construct test views
