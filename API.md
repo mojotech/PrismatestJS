@@ -10,6 +10,9 @@ Adapters provide the details of how test views are combined, how elements are
 selected and how actions interact with elements. It is useful to consider
 adapters as adhering to the same interface but parameterizing it on two types.
 
+You can use more than one adapter in a test, but test views from different
+adapters cannot be combined together safely.
+
 ### Element Type
 
 Adapters specify the type of the elements they interact with. For the most part
