@@ -5,25 +5,50 @@
 // NA = Next actions
 // A = Actions
 
-interface MaterializedTestView<E, A> {
+interface MaterializedTestView<E, A, B> {
   actions: MaterializedActions<E, A & DefaultActions<E>>;
+  aggregates: MaterializedAggregates<E, B & DefaultAggregates>;
 }
 
-interface TestView<S, E, A> {
-  materialize(e: E): MaterializedTestView<E, A>;
+interface TestView<S, E, A, B> {
+  materialize(e: E): MaterializedTestView<E, A, B>;
   selector: S;
   actions: A;
-  <NA extends { [k: string]: Action<E> }>(
-    nextView: TestView<S, E, NA>
-  ): TestView<S, E, NA>;
+  aggregates: B;
+  <
+    NA extends { [k: string]: Action<E> },
+    NB extends { [k: string]: Aggregate<E> }
+  >(
+    nextView: TestView<S, E, NA, NB>
+  ): TestView<S, E, NA, NB>;
 }
 
+// Aggregate actions operate on the entire set of selected elements
+type Aggregate<E> = (e: E[], ...args: any[]) => any;
+// Gets all of the non-element parameters
+type AggregateParameters<E, F extends Aggregate<E>> = Tail<Parameters<F>>;
+interface MaterializedAggregate<E, A extends Aggregate<E>> {
+  (...args: AggregateParameters<E, A>): ReturnType<A>;
+}
+type AggregateMaterializer<S, E> = <A extends Aggregate<E>>(
+  selector: S,
+  aggregate: A,
+  root: E
+) => MaterializedAggregate<E, A>;
+type MaterializedAggregates<E, A extends { [k: string]: Aggregate<E> }> = {
+  [K in keyof A]: MaterializedAggregate<E, A[K]>
+};
+type DefaultAggregates = {};
+
 export interface TestViewConstructor<S, E> {
-  <A extends { [k: string]: Action<E> }>(selector: S, actions?: A): TestView<
-    S,
-    E,
-    A
-  >;
+  <
+    A extends { [k: string]: Action<E> },
+    B extends { [k: string]: Aggregate<E> }
+  >(
+    selector: S,
+    actions?: A,
+    aggregates?: B
+  ): TestView<S, E, A, B>;
   defaultViews: MaterializedDefaultViews<S, E>;
 }
 
@@ -80,6 +105,7 @@ type MaterializedActions<E, A extends { [k: string]: Action<E> }> = {
 const makeTestViewConstructor = <S, E>(
   composeSelectors: ComposeSelectors<S>,
   actionRealizer: ActionMaterializer<S, E>,
+  aggregateRealizer: AggregateMaterializer<S, E>,
   defaultViews: DefaultViews<S, E>
 ): TestViewConstructor<S, E> => {
   // Once an adapter is plugged in, test views are created by supplying a
@@ -89,20 +115,30 @@ const makeTestViewConstructor = <S, E>(
   // in scope of all the actions. Actions can then be run and will query the
   // root node using the composed selector. A default `get` action is
   // always present to return the node(s) selected.
-  const testView = <A extends { [k: string]: Action<E> }>(
+  const testView = <
+    A extends { [k: string]: Action<E> },
+    B extends { [k: string]: Aggregate<E> }
+  >(
     selector: S,
-    actionsOpt?: A
-  ): TestView<S, E, A> => {
+    actionsOpt?: A,
+    aggregatesOpt?: B
+  ): TestView<S, E, A, B> => {
     const actions: A = actionsOpt || ({} as A);
-    const view = <NA extends { [k: string]: Action<E> }>(
-      nextView: TestView<S, E, NA>
-    ): TestView<S, E, NA> =>
-      testView<NA>(
+    const aggregate: B = aggregatesOpt || ({} as B);
+    const view = <
+      NA extends { [k: string]: Action<E> },
+      NB extends { [k: string]: Aggregate<E> }
+    >(
+      nextView: TestView<S, E, NA, NB>
+    ): TestView<S, E, NA, NB> =>
+      testView<NA, NB>(
         composeSelectors(selector, nextView.selector),
-        nextView.actions
+        nextView.actions,
+        nextView.aggregates
       );
 
     view.actions = actions;
+    view.aggregates = aggregate;
     view.selector = selector;
     view.materialize = (root: E) => {
       const defaultActions: MaterializedActions<E, DefaultActions<E>> = {
@@ -120,8 +156,21 @@ const makeTestViewConstructor = <S, E>(
         }
       }
 
+      const materializedAggregate = {} as MaterializedAggregates<E, B>;
+
+      for (let agg in aggregate) {
+        if (aggregate.hasOwnProperty(agg)) {
+          materializedAggregate[agg] = aggregateRealizer(
+            selector,
+            aggregate[agg],
+            root
+          );
+        }
+      }
+
       return {
-        actions: { ...defaultActions, ...materializedActions }
+        actions: { ...defaultActions, ...materializedActions },
+        aggregates: materializedAggregate
       };
     };
 
@@ -164,7 +213,7 @@ export class MultipleSelectedElementsError<S, E> extends Error {
     this.name = 'MultipleSelectedElementsError';
     this.selector = selector;
     this.root = root;
-    this.message = `Selector: ${selector} returned multiple elements at root: ${root}`
+    this.message = `Selector: ${selector} returned multiple elements at root: ${root}`;
   }
 }
 
@@ -177,7 +226,7 @@ export class ZeroSelectedElementsError<S, E> extends Error {
     this.name = 'ZeroSelectedElementsError';
     this.selector = selector;
     this.root = root;
-    this.message = `Selector: ${selector} returned zero elements at root: ${root}`
+    this.message = `Selector: ${selector} returned zero elements at root: ${root}`;
   }
 }
 
@@ -192,7 +241,7 @@ export class IndexOutOfBoundsError<S, E> extends Error {
     this.selector = selector;
     this.root = root;
     this.index = index;
-    this.message = `Index: ${index} of Selector: ${selector} returned no element at root: ${root}`
+    this.message = `Index: ${index} of Selector: ${selector} returned no element at root: ${root}`;
   }
 }
 
@@ -233,12 +282,12 @@ const makeActionMaterializer = <S, E, EG>(
       runSelector(selector, root),
       e => e
     );
-    const offset = n-1;
+    const offset = n - 1;
 
-    if(elements.length === 0) {
+    if (elements.length === 0) {
       throw new ZeroSelectedElementsError(selector, root);
     }
-    if(elements[offset] === null || elements[offset] === undefined) {
+    if (elements[offset] === null || elements[offset] === undefined) {
       throw new IndexOutOfBoundsError(n, selector, root);
     }
 
@@ -246,6 +295,18 @@ const makeActionMaterializer = <S, E, EG>(
   };
   return base;
 };
+
+const makeAggregateRealizer = <S, E, EG>(
+  runSelector: (selector: S, root: E) => EG,
+  forEachElement: (elements: EG, fn: (e: E) => E) => E[]
+) => <A extends Aggregate<E>>(
+  selector: S,
+  aggregate: A,
+  root: E
+): MaterializedAggregate<E, A> => (
+  ...args: AggregateParameters<E, A>
+): ReturnType<A> =>
+  aggregate(forEachElement(runSelector(selector, root), e => e), ...args);
 
 // ComposeSelectors must be associative
 export type ComposeSelectors<S> = (first: S, second: S) => S;
@@ -264,12 +325,19 @@ export const makeAdapter = <S, E, EG>(
   makeTestViewConstructor<S, E>(
     composeSelectors,
     makeActionMaterializer<S, E, EG>(runSelector, iterateSelector),
+    makeAggregateRealizer<S, E, EG>(runSelector, iterateSelector),
     defaultViews
   );
 
-export interface DefaultView<S, E, A extends { [k: string]: Action<E> }> {
+export interface DefaultView<
+  S,
+  E,
+  A extends { [k: string]: Action<E> },
+  B extends { [k: string]: Aggregate<E> }
+> {
   selector: S;
   actions: A;
+  aggregate: B;
 }
 
 export interface DefaultViews<S, E> {
@@ -280,7 +348,8 @@ export interface DefaultViews<S, E> {
       toggle: (e: E) => void;
       isChecked: (e: E) => boolean;
       getValue: (e: E) => string;
-    }
+    },
+    {}
   >;
   radio: DefaultView<
     S,
@@ -290,7 +359,8 @@ export interface DefaultViews<S, E> {
       select: (e: E) => void;
       // Get the selected value from this radio button's group of radio buttons
       getSelectedValue: (e: E) => string | null;
-    }
+    },
+    {}
   >;
   textInput: DefaultView<
     S,
@@ -298,7 +368,8 @@ export interface DefaultViews<S, E> {
     {
       enterText: (e: E, text: string) => void;
       getText: (e: E) => string;
-    }
+    },
+    {}
   >;
   singleSelect: DefaultView<
     S,
@@ -306,7 +377,8 @@ export interface DefaultViews<S, E> {
     {
       select: (e: E, value: string) => void;
       getSelection: (e: E) => string;
-    }
+    },
+    {}
   >;
   multiSelect: DefaultView<
     S,
@@ -314,30 +386,34 @@ export interface DefaultViews<S, E> {
     {
       select: (e: E, value: string[]) => void;
       getSelection: (e: E) => string[];
-    }
+    },
+    {}
   >;
   form: DefaultView<
     S,
     E,
     {
       submit: (e: E) => void;
-    }
+    },
+    {}
   >;
   button: DefaultView<
     S,
     E,
     {
       click: (e: E) => void;
-    }
+    },
+    {}
   >;
 }
 
 type MaterializedDefaultView<D> = D extends DefaultView<
   infer S,
   infer E,
-  infer A
+  infer A,
+  infer B
 >
-  ? TestView<S, E, A>
+  ? TestView<S, E, A, B>
   : never;
 
 type MaterializedDefaultViews<S, E> = {
