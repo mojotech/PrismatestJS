@@ -5,10 +5,13 @@
 // NA = Next actions
 // A = Actions
 
-interface MaterializedTestView<E, A, B> {
-  actions: MaterializedActions<E, A & DefaultActions<E>>;
-  aggregates: MaterializedAggregates<E, B & DefaultAggregates>;
-}
+type MaterializedTestView<E, A, B> = MaterializedActions<
+  E,
+  A & DefaultActions<E>
+> &
+  MaterializedAggregates<E, B & DefaultAggregates> &
+  { actions: MaterializedActions<E, A & DefaultActions<E>>,
+    aggregates: MaterializedAggregates<E, B & DefaultAggregates> };
 
 interface TestView<S, E, A, B> {
   materialize(e: E): MaterializedTestView<E, A, B>;
@@ -169,6 +172,9 @@ const makeTestViewConstructor = <S, E>(
       }
 
       return {
+        ...defaultActions,
+        ...materializedActions,
+        ...materializedAggregate,
         actions: { ...defaultActions, ...materializedActions },
         aggregates: materializedAggregate
       };
