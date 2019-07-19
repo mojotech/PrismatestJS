@@ -13,17 +13,17 @@ type MaterializedTestView<E, A, B> = MaterializedActions<
   { actions: MaterializedActions<E, A & DefaultActions<E>>,
     aggregates: MaterializedAggregates<E, B & DefaultAggregates> };
 
-interface TestView<S, E, A, B> {
-  materialize(e: E): MaterializedTestView<E, A, B>;
-  selector: S;
+interface TestView<S, E, A, B, SA extends any[]> {
+  materialize(e: E, ...selectorArgs: SA): MaterializedTestView<E, A, B>;
+  selector: (...selectorArgs: SA) => S,
   actions: A;
   aggregates: B;
   <
     NA extends { [k: string]: Action<E> },
     NB extends { [k: string]: Aggregate<E> }
   >(
-    nextView: TestView<S, E, NA, NB>
-  ): TestView<S, E, NA, NB>;
+    nextView: TestView<S, E, NA, NB, []>
+  ): TestView<S, E, NA, NB, SA>;
 }
 
 // Aggregate actions operate on the entire set of selected elements
@@ -46,12 +46,13 @@ type DefaultAggregates = {};
 export interface TestViewConstructor<S, E> {
   <
     A extends { [k: string]: Action<E> },
-    B extends { [k: string]: Aggregate<E> }
+    B extends { [k: string]: Aggregate<E> },
+    SA extends any[]
   >(
-    selector: S,
+    selector: (...selectorArgs: SA) => S,
     actions?: A,
     aggregates?: B
-  ): TestView<S, E, A, B>;
+  ): TestView<S, E, A, B, SA>;
   defaultViews: MaterializedDefaultViews<S, E>;
 }
 
@@ -120,22 +121,23 @@ const makeTestViewConstructor = <S, E>(
   // always present to return the node(s) selected.
   const testView = <
     A extends { [k: string]: Action<E> },
-    B extends { [k: string]: Aggregate<E> }
+    B extends { [k: string]: Aggregate<E> },
+    SA extends any[]
   >(
-    selector: S,
+    selector: (...selectorArgs: SA) => S,
     actionsOpt?: A,
     aggregatesOpt?: B
-  ): TestView<S, E, A, B> => {
+  ): TestView<S, E, A, B, SA> => {
     const actions: A = actionsOpt || ({} as A);
     const aggregate: B = aggregatesOpt || ({} as B);
     const view = <
       NA extends { [k: string]: Action<E> },
       NB extends { [k: string]: Aggregate<E> }
     >(
-      nextView: TestView<S, E, NA, NB>
-    ): TestView<S, E, NA, NB> =>
-      testView<NA, NB>(
-        composeSelectors(selector, nextView.selector),
+      nextView: TestView<S, E, NA, NB, []>
+    ): TestView<S, E, NA, NB, SA> =>
+      testView<NA, NB, SA>(
+        (...args: SA) => composeSelectors(selector(...args), nextView.selector()),
         nextView.actions,
         nextView.aggregates
       );
@@ -143,16 +145,17 @@ const makeTestViewConstructor = <S, E>(
     view.actions = actions;
     view.aggregates = aggregate;
     view.selector = selector;
-    view.materialize = (root: E) => {
+    view.materialize = (root: E, ...selectorArgs: SA) => {
+      const renderedSelector = selector(...selectorArgs);
       const defaultActions: MaterializedActions<E, DefaultActions<E>> = {
-        get: actionRealizer(selector, (e: E) => e, root)
+        get: actionRealizer(renderedSelector, (e: E) => e, root)
       };
       const materializedActions = {} as MaterializedActions<E, A>;
 
       for (let action in actions) {
         if (actions.hasOwnProperty(action)) {
           materializedActions[action] = actionRealizer(
-            selector,
+            renderedSelector,
             actions[action],
             root
           );
@@ -164,7 +167,7 @@ const makeTestViewConstructor = <S, E>(
       for (let agg in aggregate) {
         if (aggregate.hasOwnProperty(agg)) {
           materializedAggregate[agg] = aggregateRealizer(
-            selector,
+            renderedSelector,
             aggregate[agg],
             root
           );
@@ -185,24 +188,24 @@ const makeTestViewConstructor = <S, E>(
 
   const materializedDefaultViews: MaterializedDefaultViews<S, E> = {
     checkbox: testView(
-      defaultViews.checkbox.selector,
+      () => defaultViews.checkbox.selector,
       defaultViews.checkbox.actions
     ),
-    radio: testView(defaultViews.radio.selector, defaultViews.radio.actions),
+    radio: testView(() => defaultViews.radio.selector, defaultViews.radio.actions),
     textInput: testView(
-      defaultViews.textInput.selector,
+      () => defaultViews.textInput.selector,
       defaultViews.textInput.actions
     ),
     singleSelect: testView(
-      defaultViews.singleSelect.selector,
+      () => defaultViews.singleSelect.selector,
       defaultViews.singleSelect.actions
     ),
     multiSelect: testView(
-      defaultViews.multiSelect.selector,
+      () => defaultViews.multiSelect.selector,
       defaultViews.multiSelect.actions
     ),
-    form: testView(defaultViews.form.selector, defaultViews.form.actions),
-    button: testView(defaultViews.button.selector, defaultViews.button.actions)
+    form: testView(() => defaultViews.form.selector, defaultViews.form.actions),
+    button: testView(() => defaultViews.button.selector, defaultViews.button.actions)
   };
 
   testView.defaultViews = materializedDefaultViews;
@@ -419,7 +422,7 @@ type MaterializedDefaultView<D> = D extends DefaultView<
   infer A,
   infer B
 >
-  ? TestView<S, E, A, B>
+  ? TestView<S, E, A, B, []>
   : never;
 
 type MaterializedDefaultViews<S, E> = {
