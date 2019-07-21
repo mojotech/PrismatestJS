@@ -5,60 +5,91 @@
 // NA = Next actions
 // A = Actions
 
-type MaterializedTestView<E, A, B> = MaterializedActions<
+// Minor utility to get parameters of actions and aggregates
+type AParameters<AType extends (...args: any[]) => any> = Tail<
+  Parameters<AType>
+>;
+
+// Note the difference between aggregates and actions is in their first argument
+// Aggregate types
+type Aggregate<E> = (e: E[], ...args: any[]) => any;
+type AggregateParameters<E, A extends Aggregate<E>> = AParameters<A>;
+type AggregateMap<E> = { [k: string]: Aggregate<E> };
+type DefaultAggregates = {};
+
+// Materialized aggregate types
+type MaterializedAggregate<E, A extends Aggregate<E>> = (
+  ...args: AParameters<A>
+) => ReturnType<A>;
+type MaterializedAggregateMap<
+  E,
+  AggregateMap extends { [k: string]: Aggregate<E> }
+> = { [K in keyof AggregateMap]: MaterializedAggregate<E, AggregateMap[K]> };
+
+// Relationship between aggregate and materialized aggregate
+type AggregateMaterializer<S, E> = <A extends Aggregate<E>>(
+  selector: S,
+  action: A,
+  root: E
+) => MaterializedAggregate<E, A>;
+
+// Action types
+type Action<E> = (e: E, ...args: any[]) => any;
+type ActionParameters<E, A extends Action<E>> = AParameters<A>;
+type ActionMap<E> = { [k: string]: Action<E> };
+type DefaultActions<E> = {
+  get: (e: E) => E;
+};
+
+// Materialized action types
+type MaterializedAction<E, A extends Action<E>> = {
+  (...args: ActionParameters<E, A>): ReturnType<A>[];
+  one(...args: ActionParameters<E, A>): ReturnType<A>;
+  at(n: number, ...args: ActionParameters<E, A>): ReturnType<A>;
+};
+type MaterializedActionMap<E, ActionMap extends { [k: string]: Action<E> }> = {
+  [K in keyof ActionMap]: MaterializedAction<E, ActionMap[K]>
+};
+
+// Relationship between actions and materialized actions
+type ActionMaterializer<S, E> = <A extends Action<E>>(
+  selector: S,
+  action: A,
+  root: E
+) => MaterializedAction<E, A>;
+
+type MaterializedTestView<E, A, B> = MaterializedActionMap<
   E,
   A & DefaultActions<E>
 > &
-  MaterializedAggregates<E, B & DefaultAggregates> &
-  { actions: MaterializedActions<E, A & DefaultActions<E>>,
-    aggregates: MaterializedAggregates<E, B & DefaultAggregates> };
+  MaterializedAggregateMap<E, B & DefaultAggregates> &
+  { actions: MaterializedActionMap<E, A & DefaultActions<E>>,
+    aggregates: MaterializedAggregateMap<E, B & DefaultAggregates> };
 
+type ParameterizedSelector<SA extends any[], S> = (...selectorArgs: SA) => S;
+
+// testView.run(e, "submit")
+// testView("selector", {});
+// testView((name: string) => "selector", {})
+// testView(testView((name: string) => "selector, {})) - Bad! How does name get supplied? Type error
 interface TestView<S, E, A, B, SA extends any[]> {
   materialize(e: E, ...selectorArgs: SA): MaterializedTestView<E, A, B>;
-  selector: (...selectorArgs: SA) => S,
+  selector: ParameterizedSelector<SA, S>;
   actions: A;
   aggregates: B;
-  <
-    NA extends { [k: string]: Action<E> },
-    NB extends { [k: string]: Aggregate<E> }
-  >(
+  <NA extends ActionMap<E>, NB extends AggregateMap<E>>(
     nextView: TestView<S, E, NA, NB, []>
   ): TestView<S, E, NA, NB, SA>;
 }
 
-// Aggregate actions operate on the entire set of selected elements
-type Aggregate<E> = (e: E[], ...args: any[]) => any;
-// Gets all of the non-element parameters
-type AggregateParameters<E, F extends Aggregate<E>> = Tail<Parameters<F>>;
-interface MaterializedAggregate<E, A extends Aggregate<E>> {
-  (...args: AggregateParameters<E, A>): ReturnType<A>;
-}
-type AggregateMaterializer<S, E> = <A extends Aggregate<E>>(
-  selector: S,
-  aggregate: A,
-  root: E
-) => MaterializedAggregate<E, A>;
-type MaterializedAggregates<E, A extends { [k: string]: Aggregate<E> }> = {
-  [K in keyof A]: MaterializedAggregate<E, A[K]>
-};
-type DefaultAggregates = {};
-
 export interface TestViewConstructor<S, E> {
-  <
-    A extends { [k: string]: Action<E> },
-    B extends { [k: string]: Aggregate<E> },
-    SA extends any[]
-  >(
-    selector: (...selectorArgs: SA) => S,
+  <A extends ActionMap<E>, B extends AggregateMap<E>, SA extends any[]>(
+    selector: ParameterizedSelector<SA, S>,
     actions?: A,
     aggregates?: B
   ): TestView<S, E, A, B, SA>;
   defaultViews: MaterializedDefaultViews<S, E>;
 }
-
-type DefaultActions<E> = {
-  get: (e: E) => E;
-};
 
 // Helper to get the tail of a tuple
 type Tail<T extends any[]> = ((...t: T) => any) extends ((
@@ -67,34 +98,6 @@ type Tail<T extends any[]> = ((...t: T) => any) extends ((
 ) => any)
   ? TT
   : never;
-
-// Actions take an element to operate on as their first argument, and any
-// number of required parameters that the action needs
-type Action<E> = (e: E, ...args: any[]) => any;
-
-// Gets all of the non-element parameters
-type ActionParameters<E, F extends Action<E>> = Tail<Parameters<F>>;
-
-// Materializing an action involves filling in the element parameter with one
-// or many elements resulting from running a selector. When the action is run
-// it will have one or many copies of the return value.
-interface MaterializedAction<E, A extends Action<E>> {
-  (...args: ActionParameters<E, A>): ReturnType<A>[];
-  one(...args: ActionParameters<E, A>): ReturnType<A>;
-  at(n: number, ...args: ActionParameters<E, A>): ReturnType<A>;
-}
-
-// The action materializer runs the selector on the root and materializes the
-// actions given
-type ActionMaterializer<S, E> = <A extends Action<E>>(
-  selector: S,
-  action: A,
-  root: E
-) => MaterializedAction<E, A>;
-
-type MaterializedActions<E, A extends { [k: string]: Action<E> }> = {
-  [K in keyof A]: MaterializedAction<E, A[K]>
-};
 
 // Important considerations for types
 // - can't mix and match test views with different adapters
@@ -120,20 +123,17 @@ const makeTestViewConstructor = <S, E>(
   // root node using the composed selector. A default `get` action is
   // always present to return the node(s) selected.
   const testView = <
-    A extends { [k: string]: Action<E> },
-    B extends { [k: string]: Aggregate<E> },
+    A extends ActionMap<E>,
+    B extends AggregateMap<E>,
     SA extends any[]
   >(
-    selector: (...selectorArgs: SA) => S,
+    selector: ParameterizedSelector<SA, S>,
     actionsOpt?: A,
     aggregatesOpt?: B
   ): TestView<S, E, A, B, SA> => {
     const actions: A = actionsOpt || ({} as A);
     const aggregate: B = aggregatesOpt || ({} as B);
-    const view = <
-      NA extends { [k: string]: Action<E> },
-      NB extends { [k: string]: Aggregate<E> }
-    >(
+    const view = <NA extends ActionMap<E>, NB extends AggregateMap<E>>(
       nextView: TestView<S, E, NA, NB, []>
     ): TestView<S, E, NA, NB, SA> =>
       testView<NA, NB, SA>(
@@ -147,10 +147,10 @@ const makeTestViewConstructor = <S, E>(
     view.selector = selector;
     view.materialize = (root: E, ...selectorArgs: SA) => {
       const renderedSelector = selector(...selectorArgs);
-      const defaultActions: MaterializedActions<E, DefaultActions<E>> = {
+      const defaultActions: MaterializedActionMap<E, DefaultActions<E>> = {
         get: actionRealizer(renderedSelector, (e: E) => e, root)
       };
-      const materializedActions = {} as MaterializedActions<E, A>;
+      const materializedActions = {} as MaterializedActionMap<E, A>;
 
       for (let action in actions) {
         if (actions.hasOwnProperty(action)) {
@@ -162,7 +162,7 @@ const makeTestViewConstructor = <S, E>(
         }
       }
 
-      const materializedAggregate = {} as MaterializedAggregates<E, B>;
+      const materializedAggregate = {} as MaterializedAggregateMap<E, B>;
 
       for (let agg in aggregate) {
         if (aggregate.hasOwnProperty(agg)) {
@@ -341,8 +341,8 @@ export const makeAdapter = <S, E, EG>(
 export interface DefaultView<
   S,
   E,
-  A extends { [k: string]: Action<E> },
-  B extends { [k: string]: Aggregate<E> }
+  A extends ActionMap<E>,
+  B extends AggregateMap<E>
 > {
   selector: S;
   actions: A;
