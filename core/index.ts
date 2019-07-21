@@ -62,9 +62,10 @@ type MaterializedTestView<E, A, B> = MaterializedActionMap<
   E,
   A & DefaultActions<E>
 > &
-  MaterializedAggregateMap<E, B & DefaultAggregates> &
-  { actions: MaterializedActionMap<E, A & DefaultActions<E>>,
-    aggregates: MaterializedAggregateMap<E, B & DefaultAggregates> };
+  MaterializedAggregateMap<E, B & DefaultAggregates> & {
+    actions: MaterializedActionMap<E, A & DefaultActions<E>>;
+    aggregates: MaterializedAggregateMap<E, B & DefaultAggregates>;
+  };
 
 type ParameterizedSelector<SA extends any[], S> = (...selectorArgs: SA) => S;
 
@@ -137,7 +138,8 @@ const makeTestViewConstructor = <S, E>(
       nextView: TestView<S, E, NA, NB, []>
     ): TestView<S, E, NA, NB, SA> =>
       testView<NA, NB, SA>(
-        (...args: SA) => composeSelectors(selector(...args), nextView.selector()),
+        (...args: SA) =>
+          composeSelectors(selector(...args), nextView.selector()),
         nextView.actions,
         nextView.aggregates
       );
@@ -191,7 +193,10 @@ const makeTestViewConstructor = <S, E>(
       () => defaultViews.checkbox.selector,
       defaultViews.checkbox.actions
     ),
-    radio: testView(() => defaultViews.radio.selector, defaultViews.radio.actions),
+    radio: testView(
+      () => defaultViews.radio.selector,
+      defaultViews.radio.actions
+    ),
     textInput: testView(
       () => defaultViews.textInput.selector,
       defaultViews.textInput.actions
@@ -205,7 +210,10 @@ const makeTestViewConstructor = <S, E>(
       defaultViews.multiSelect.actions
     ),
     form: testView(() => defaultViews.form.selector, defaultViews.form.actions),
-    button: testView(() => defaultViews.button.selector, defaultViews.button.actions)
+    button: testView(
+      () => defaultViews.button.selector,
+      defaultViews.button.actions
+    )
   };
 
   testView.defaultViews = materializedDefaultViews;
