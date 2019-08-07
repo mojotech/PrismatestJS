@@ -67,28 +67,40 @@ type MaterializedTestView<E, A, B> = MaterializedActionMap<
     aggregates: MaterializedAggregateMap<E, B & DefaultAggregates>;
   };
 
-type ParameterizedSelector<SA extends any[], S> = (...selectorArgs: SA) => S;
+type ParameterizedSelectorDiscriminator<S> = ((...args: any[]) => S) | S;
 
+type ParameterizedSelectorArgs<
+  S, F
+> = F extends (...args: infer Args) => S ? Args : [];
+
+type ParameterizedSelector<S, F> = F extends (...args: any[]) => S
+    ? F
+    : S;
+
+// Only the first selector should be able to be parameterized
 // testView.run(e, "submit")
 // testView("selector", {});
 // testView((name: string) => "selector", {})
 // testView(testView((name: string) => "selector, {})) - Bad! How does name get supplied? Type error
-interface TestView<S, E, A, B, SA extends any[]> {
-  materialize(e: E, ...selectorArgs: SA): MaterializedTestView<E, A, B>;
-  selector: ParameterizedSelector<SA, S>;
+interface TestView<S, E, A, B, F> {
+  materialize(
+    e: E,
+    ...selectorArgs: ParameterizedSelectorArgs<S, F>
+  ): MaterializedTestView<E, A, B>;
+  selector: ParameterizedSelector<S, F>;
   actions: A;
   aggregates: B;
   <NA extends ActionMap<E>, NB extends AggregateMap<E>>(
-    nextView: TestView<S, E, NA, NB, []>
-  ): TestView<S, E, NA, NB, SA>;
+    nextView: TestView<S, E, NA, NB, S>
+  ): TestView<S, E, NA, NB, F>;
 }
 
 export interface TestViewConstructor<S, E> {
-  <A extends ActionMap<E>, B extends AggregateMap<E>, SA extends any[]>(
-    selector: ParameterizedSelector<SA, S>,
+  <A extends ActionMap<E>, B extends AggregateMap<E>, F extends ParameterizedSelectorDiscriminator<S>>(
+    selector: ParameterizedSelector<S, F>,
     actions?: A,
     aggregates?: B
-  ): TestView<S, E, A, B, SA>;
+  ): TestView<S, E, A, B, F>;
   defaultViews: MaterializedDefaultViews<S, E>;
 }
 
@@ -126,29 +138,48 @@ const makeTestViewConstructor = <S, E>(
   const testView = <
     A extends ActionMap<E>,
     B extends AggregateMap<E>,
-    SA extends any[]
+    F extends ParameterizedSelectorDiscriminator<S>
   >(
-    selector: ParameterizedSelector<SA, S>,
+    selector: ParameterizedSelector<S, F>,
     actionsOpt?: A,
     aggregatesOpt?: B
-  ): TestView<S, E, A, B, SA> => {
+  ): TestView<S, E, A, B, F> => {
     const actions: A = actionsOpt || ({} as A);
     const aggregate: B = aggregatesOpt || ({} as B);
     const view = <NA extends ActionMap<E>, NB extends AggregateMap<E>>(
-      nextView: TestView<S, E, NA, NB, []>
-    ): TestView<S, E, NA, NB, SA> =>
-      testView<NA, NB, SA>(
-        (...args: SA) =>
-          composeSelectors(selector(...args), nextView.selector()),
-        nextView.actions,
-        nextView.aggregates
-      );
+      nextView: TestView<S, E, NA, NB, S>
+    ): TestView<S, E, NA, NB, F> => {
+      if (selector instanceof Function) {
+        return testView<NA, NB, F>(
+          ((...args: ParameterizedSelectorArgs<S, F>) =>
+            composeSelectors(
+              selector(...args),
+              nextView.selector
+            )) as ParameterizedSelector<S, F>,
+          nextView.actions,
+          nextView.aggregates
+        );
+      } else {
+        return testView<NA, NB, F>(
+          composeSelectors(
+            selector as S,
+            nextView.selector
+          ) as ParameterizedSelector<S, F>,
+          nextView.actions,
+          nextView.aggregates
+        );
+      }
+    };
 
     view.actions = actions;
     view.aggregates = aggregate;
     view.selector = selector;
-    view.materialize = (root: E, ...selectorArgs: SA) => {
-      const renderedSelector = selector(...selectorArgs);
+    view.materialize = (
+      root: E,
+      ...selectorArgs: ParameterizedSelectorArgs<S, F>
+    ) => {
+      const renderedSelector =
+        selector instanceof Function ? selector(...selectorArgs) : selector;
       const defaultActions: MaterializedActionMap<E, DefaultActions<E>> = {
         get: actionRealizer(renderedSelector, (e: E) => e, root)
       };
@@ -190,28 +221,28 @@ const makeTestViewConstructor = <S, E>(
 
   const materializedDefaultViews: MaterializedDefaultViews<S, E> = {
     checkbox: testView(
-      () => defaultViews.checkbox.selector,
+      defaultViews.checkbox.selector,
       defaultViews.checkbox.actions
     ),
     radio: testView(
-      () => defaultViews.radio.selector,
+      defaultViews.radio.selector,
       defaultViews.radio.actions
     ),
     textInput: testView(
-      () => defaultViews.textInput.selector,
+      defaultViews.textInput.selector,
       defaultViews.textInput.actions
     ),
     singleSelect: testView(
-      () => defaultViews.singleSelect.selector,
+      defaultViews.singleSelect.selector,
       defaultViews.singleSelect.actions
     ),
     multiSelect: testView(
-      () => defaultViews.multiSelect.selector,
+      defaultViews.multiSelect.selector,
       defaultViews.multiSelect.actions
     ),
-    form: testView(() => defaultViews.form.selector, defaultViews.form.actions),
+    form: testView(defaultViews.form.selector, defaultViews.form.actions),
     button: testView(
-      () => defaultViews.button.selector,
+      defaultViews.button.selector,
       defaultViews.button.actions
     )
   };
@@ -352,7 +383,7 @@ export interface DefaultView<
   A extends ActionMap<E>,
   B extends AggregateMap<E>
 > {
-  selector: S;
+  selector: ParameterizedSelector<S, S>;
   actions: A;
   aggregate: B;
 }
@@ -430,7 +461,7 @@ type MaterializedDefaultView<D> = D extends DefaultView<
   infer A,
   infer B
 >
-  ? TestView<S, E, A, B, []>
+  ? TestView<S, E, A, B, S>
   : never;
 
 type MaterializedDefaultViews<S, E> = {
