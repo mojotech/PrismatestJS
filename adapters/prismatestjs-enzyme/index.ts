@@ -8,16 +8,24 @@ import {
 import { ReactWrapper } from 'enzyme';
 
 // This adapter works with enzyme ReactWrappers
-type SelectorType = (e: ReactWrapper) => ReactWrapper;
+class SelectorType {
+  public run: (e: ReactWrapper) => ReactWrapper;
+
+  constructor(run: (e: ReactWrapper) => ReactWrapper) {
+    this.run = run;
+  }
+}
+
 type ElementType = ReactWrapper;
 type ElementGroupType = ReactWrapper;
 
-const composeSelectors: ComposeSelectors<SelectorType> = (a, b) => s => b(a(s));
+const composeSelectors: ComposeSelectors<SelectorType> = (a, b) =>
+  new SelectorType(s => b.run(a.run(s)));
 
 const runSelector: RunSelector<SelectorType, ElementType, ElementGroupType> = (
   selector,
   element
-) => selector(element);
+) => selector.run(element);
 
 const iterateSelector: IterateSelector<ElementType, ElementGroupType> = (
   nodes,
@@ -26,7 +34,7 @@ const iterateSelector: IterateSelector<ElementType, ElementGroupType> = (
 
 export const selector = (
   ...args: Parameters<ReactWrapper['find']>
-): SelectorType => e => e.find(...args);
+): SelectorType => new SelectorType(e => e.find(...args));
 
 // Apparently, Enzyme isn't really intended to manipulate the raw DOM nodes,
 // only React components. As such this is basically the same code as from the
@@ -42,7 +50,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       },
       isChecked: e => (e.instance() as any).checked,
       getValue: e => e.prop('value')
-    }
+    },
+    aggregate: {}
   },
   radio: {
     selector: selector("input[type='radio']"),
@@ -75,17 +84,18 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         }
         return null;
       }
-    }
+    },
+    aggregate: {}
   },
   textInput: {
-    selector: n =>
+    selector: new SelectorType(n =>
       n
-        .children()
-        .filterWhere(
+        .findWhere(
           e =>
             (e.type() === 'input' && e.prop('type') === 'text') ||
             e.type() === 'textarea'
-        ),
+        )
+    ),
     actions: {
       enterText: (e, text) => {
         const input: HTMLInputElement = e.instance() as any;
@@ -93,7 +103,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         e.simulate('change', { target: input });
       },
       getText: e => (e.instance() as any).value
-    }
+    },
+    aggregate: {}
   },
   singleSelect: {
     selector: selector('select:not([multiple])'),
@@ -109,7 +120,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         }
       },
       getSelection: e => (e.instance() as any).value
-    }
+    },
+    aggregate: {}
   },
   multiSelect: {
     selector: selector('select[multiple]'),
@@ -138,7 +150,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
           .children()
           .filterWhere(e => (e.instance() as any).selected)
           .map(e => (e.instance() as any).value)
-    }
+    },
+    aggregate: {}
   },
   form: {
     selector: selector('form'),
@@ -146,21 +159,24 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       submit: e => {
         e.simulate('submit');
       }
-    }
+    },
+    aggregate: {}
   },
   button: {
-    selector: e =>
+    selector: new SelectorType(e =>
       e.findWhere(
         n =>
           n.type() === 'button' ||
           (n.type() === 'input' && n.prop('type') === 'button') ||
           (n.type() === 'input' && n.prop('type') === 'submit')
-      ),
+      )
+    ),
     actions: {
       click: e => {
         e.simulate('click');
       }
-    }
+    },
+    aggregate: {}
   }
 };
 
