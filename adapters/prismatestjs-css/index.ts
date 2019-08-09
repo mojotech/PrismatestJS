@@ -65,7 +65,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       },
       isChecked: e => (e as HTMLInputElement).checked,
       getValue: e => (e as HTMLInputElement).value
-    }
+    },
+    aggregate: {}
   },
   radio: {
     selector: "input[type='radio']",
@@ -99,7 +100,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         }
         return null;
       }
-    }
+    },
+    aggregate: {}
   },
   textInput: {
     selector: "input[type='text'], textarea",
@@ -109,7 +111,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         Simulate.change(e, { currentTarget: e, target: e });
       },
       getText: e => (e as HTMLInputElement).value
-    }
+    },
+    aggregate: {}
   },
   singleSelect: {
     selector: 'select:not([multiple])',
@@ -125,7 +128,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         }
       },
       getSelection: e => (e as HTMLSelectElement).value
-    }
+    },
+    aggregate: {}
   },
   multiSelect: {
     selector: 'select[multiple]',
@@ -159,7 +163,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         }
         return ret;
       }
-    }
+    },
+    aggregate: {}
   },
   form: {
     selector: 'form',
@@ -167,7 +172,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       submit: e => {
         Simulate.submit(e);
       }
-    }
+    },
+    aggregate: {}
   },
   button: {
     selector: "button, input[type='button'], input[type='submit']",
@@ -175,7 +181,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
       click: e => {
         Simulate.click(e);
       }
-    }
+    },
+    aggregate: {}
   }
 };
 

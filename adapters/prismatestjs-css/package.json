@@ -1,13 +1,13 @@
 {
   "name": "@mojotech/prismatest-css",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "CSS adapter for use with @mojotech/prismatest.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Mojotech",
   "license": "MIT",
   "dependencies": {
-    "@mojotech/prismatest": "^0.1.2",
+    "@mojotech/prismatest": "^0.2.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
@@ -18,7 +18,7 @@
     "prettier": "^1.17.1",
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.1",
-    "@mojotech/prismatest-adapter-tests": "^0.1.0"
+    "@mojotech/prismatest-adapter-tests": "^0.1.6"
   },
   "scripts": {
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
