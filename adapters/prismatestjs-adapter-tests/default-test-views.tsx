@@ -17,51 +17,51 @@ export const generateTests = <S, E>(
     );
 
     test('checking an unchecked checkbox checks it', () => {
-      const materialized = adapter.defaultViews.checkbox.materialize(
+      const materialized = adapter.defaultViews.checkbox.materialize<any>(
         render(unchecked)
       );
 
       expect(
-        materialized.actions.isChecked.one(),
+        materialized.isChecked.one(),
         'Checkbox should be unchecked'
       ).toEqual(false);
-      materialized.actions.toggle();
+      materialized.toggle();
       expect(
-        materialized.actions.isChecked.one(),
+        materialized.isChecked.one(),
         'Checkbox should be checked'
       ).toEqual(true);
     });
 
     test('checking a checked checkbox unchecks it', () => {
-      const materialized = adapter.defaultViews.checkbox.materialize(
+      const materialized = adapter.defaultViews.checkbox.materialize<any>(
         render(checked)
       );
 
       expect(
-        materialized.actions.isChecked.one(),
+        materialized.isChecked.one(),
         'Checkbox should be checked'
       ).toEqual(true);
-      materialized.actions.toggle();
+      materialized.toggle();
       expect(
-        materialized.actions.isChecked.one(),
+        materialized.isChecked.one(),
         'Checkbox should be unchecked'
       ).toEqual(false);
     });
 
     test('can get value from checked or unchecked checkboxes', () => {
-      const checkedM = adapter.defaultViews.checkbox.materialize(
+      const checkedM = adapter.defaultViews.checkbox.materialize<any>(
         render(checked)
       );
-      const uncheckedM = adapter.defaultViews.checkbox.materialize(
+      const uncheckedM = adapter.defaultViews.checkbox.materialize<any>(
         render(unchecked)
       );
 
       expect(
-        checkedM.actions.getValue.one(),
+        checkedM.getValue.one(),
         'Checked checkbox should have value'
       ).toEqual(checkboxValue);
       expect(
-        uncheckedM.actions.getValue.one(),
+        uncheckedM.getValue.one(),
         'Unchecked checkbox should have value'
       ).toEqual(checkboxValue);
     });
@@ -82,34 +82,34 @@ export const generateTests = <S, E>(
     // same result. Radio buttons are inherently connected and it makes the API
     // kind of weird.
     test('selecting a value selects it', () => {
-      const materialized = adapter.defaultViews.radio.materialize(
+      const materialized = adapter.defaultViews.radio.materialize<any>(
         render(radios)
       );
 
       expect(
-        materialized.actions.getSelectedValue.at(1),
+        materialized.getSelectedValue.at(1),
         'Radio button should have no selected value'
       ).toBeNull();
-      materialized.actions.select.at(1);
+      materialized.select.at(1);
       expect(
-        materialized.actions.getSelectedValue.at(1),
+        materialized.getSelectedValue.at(1),
         'Radio button should have selected value'
       ).toEqual(value1);
     });
 
     test('selecting a different value deselects the first one', () => {
-      const materialized = adapter.defaultViews.radio.materialize(
+      const materialized = adapter.defaultViews.radio.materialize<any>(
         render(radios)
       );
 
-      materialized.actions.select.at(1);
+      materialized.select.at(1);
       expect(
-        materialized.actions.getSelectedValue.at(1),
+        materialized.getSelectedValue.at(1),
         'Radio button should have selected value'
       ).toEqual(value1);
-      materialized.actions.select.at(2);
+      materialized.select.at(2);
       expect(
-        materialized.actions.getSelectedValue.at(1),
+        materialized.getSelectedValue.at(1),
         'Radio button should have selected value'
       ).toEqual(value2);
     });
@@ -125,15 +125,15 @@ export const generateTests = <S, E>(
 
     test('setting a value and getting it returns the value', () => {
       const testText = 'test-text';
-      const materialized = adapter.defaultViews.textInput.materialize(inputs);
+      const materialized = adapter.defaultViews.textInput.materialize<any>(inputs);
 
       expect(
-        materialized.actions.getText(),
+        materialized.getText(),
         'Text input and textarea should have no text'
       ).toEqual(['', '']);
-      materialized.actions.enterText(testText);
+      materialized.enterText(testText);
       expect(
-        materialized.actions.getText(),
+        materialized.getText(),
         'Text input and textarea should have values'
       ).toEqual([testText, testText]);
     });
@@ -166,45 +166,45 @@ export const generateTests = <S, E>(
 
     describe('singleSelect', () => {
       test('selecting a value and getting the selection returns the value', () => {
-        const materialized = adapter.defaultViews.singleSelect.materialize(
+        const materialized = adapter.defaultViews.singleSelect.materialize<any>(
           render(selectSingle)
         );
 
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Single select should have no selection'
         ).toEqual('');
-        materialized.actions.select(testValue1);
+        materialized.select(testValue1);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Single select should have selection'
         ).toEqual(testValue1);
       });
 
       test('selecting a value replaces the old value', () => {
-        const materialized = adapter.defaultViews.singleSelect.materialize(
+        const materialized = adapter.defaultViews.singleSelect.materialize<any>(
           render(selectSingle)
         );
 
-        materialized.actions.select(testValue1);
+        materialized.select(testValue1);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Single select should have selection'
         ).toEqual(testValue1);
-        materialized.actions.select(testValue2);
+        materialized.select(testValue2);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Single select should have selection'
         ).toEqual(testValue2);
       });
 
       test('does not select the multi-select', () => {
-        const materialized = adapter.defaultViews.singleSelect.materialize(
+        const materialized = adapter.defaultViews.singleSelect.materialize<any>(
           render(selects)
         );
 
         expect(
-          () => materialized.actions.get.one(),
+          () => materialized.get.one(),
           'Selector selected multiple elements'
         ).not.toThrow(MultipleSelectedElementsError);
       });
@@ -212,62 +212,62 @@ export const generateTests = <S, E>(
 
     describe('multipleSelect', () => {
       test('selecting some values and getting the selection returns the values', () => {
-        const materialized = adapter.defaultViews.multiSelect.materialize(
+        const materialized = adapter.defaultViews.multiSelect.materialize<any>(
           render(selectMultiple)
         );
 
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Multiple select should have no selections'
         ).toEqual([]);
-        materialized.actions.select([testValue1, testValue3]);
+        materialized.select([testValue1, testValue3]);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Multiple select should have selections'
         ).toEqual([testValue1, testValue3]);
       });
 
       test('selecting some values replaces the old values', () => {
-        const materialized = adapter.defaultViews.multiSelect.materialize(
+        const materialized = adapter.defaultViews.multiSelect.materialize<any>(
           render(selectMultiple)
         );
 
-        materialized.actions.select([testValue1, testValue2]);
+        materialized.select([testValue1, testValue2]);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Multiple select should have selections'
         ).toEqual([testValue1, testValue2]);
-        materialized.actions.select([testValue2, testValue3]);
+        materialized.select([testValue2, testValue3]);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Multiple select should have selections'
         ).toEqual([testValue2, testValue3]);
       });
 
       test('selecting no values returns no values', () => {
-        const materialized = adapter.defaultViews.multiSelect.materialize(
+        const materialized = adapter.defaultViews.multiSelect.materialize<any>(
           render(selectMultiple)
         );
 
-        materialized.actions.select([testValue1, testValue2]);
+        materialized.select([testValue1, testValue2]);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Multiple select should have selections'
         ).toEqual([testValue1, testValue2]);
-        materialized.actions.select([]);
+        materialized.select([]);
         expect(
-          materialized.actions.getSelection.one(),
+          materialized.getSelection.one(),
           'Multiple select should have no selections'
         ).toEqual([]);
       });
 
       test('does not select the single-select', () => {
-        const materialized = adapter.defaultViews.multiSelect.materialize(
+        const materialized = adapter.defaultViews.multiSelect.materialize<any>(
           render(selects)
         );
 
         expect(
-          () => materialized.actions.get.one(),
+          () => materialized.get.one(),
           'Selector selected multiple elements'
         ).not.toThrow(MultipleSelectedElementsError);
       });
@@ -285,10 +285,10 @@ export const generateTests = <S, E>(
     );
 
     test('calls submit handler', () => {
-      const materialized = adapter.defaultViews.form.materialize(render(form));
+      const materialized = adapter.defaultViews.form.materialize<any>(render(form));
 
       expect(flag, 'Should not have called submit handler').toEqual(false);
-      materialized.actions.submit.one();
+      materialized.submit.one();
       expect(flag, 'Should have called submit handler').toEqual(true);
     });
   });
@@ -329,30 +329,30 @@ export const generateTests = <S, E>(
     test('calls click handler of button tag', () => {
       const materialized = adapter.defaultViews
         .form(adapter.defaultViews.button)
-        .materialize(render(buttons));
+        .materialize<any>(render(buttons));
 
       expect(tagFlag, 'Should not have called click handler').toEqual(false);
-      materialized.actions.click.at(1);
+      materialized.click.at(1);
       expect(tagFlag, 'Should have called click handler').toEqual(true);
     });
 
     test('calls click handler of button input', () => {
       const materialized = adapter.defaultViews
         .form(adapter.defaultViews.button)
-        .materialize(render(buttons));
+        .materialize<any>(render(buttons));
 
       expect(inputFlag, 'Should not have called click handler').toEqual(false);
-      materialized.actions.click.at(2);
+      materialized.click.at(2);
       expect(inputFlag, 'Should have called click handler').toEqual(true);
     });
 
     test('calls click handler of submit button', () => {
       const materialized = adapter.defaultViews
         .form(adapter.defaultViews.button)
-        .materialize(render(buttons));
+        .materialize<any>(render(buttons));
 
       expect(submitFlag, 'Should not have called click handler').toEqual(false);
-      materialized.actions.click.at(3);
+      materialized.click.at(3);
       expect(submitFlag, 'Should have called click handler').toEqual(true);
     });
   });
