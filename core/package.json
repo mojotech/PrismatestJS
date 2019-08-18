@@ -7,15 +7,20 @@
   "author": "Mojotech",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^24.0.17",
+    "jest": "^24.9.0",
     "prettier": "^1.17.1",
-    "typescript": "^3.5.1"
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1",
+    "dtslint": "^0.9.1"
   },
   "scripts": {
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
     "ts": "tsc --listFiles -w --noEmit",
     "clean": "rm -rf ./dist",
     "format": "prettier --write index.ts",
-    "test": "echo 'No tests!'"
+    "test": "yarn dtslint && jest",
+    "dtslint": "tsc -d --emitDeclarationOnly --outDir ./types && dtslint --expectOnly --localTs node_modules/typescript/lib types && rm ./types/index.d.ts"
   },
   "files": [
     "dist/index.js",
