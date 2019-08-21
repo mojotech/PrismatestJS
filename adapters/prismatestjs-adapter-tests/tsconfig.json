@@ -14,6 +14,8 @@
         ]
     },
     "files": [
-        "default-test-views.tsx"
+        "index.ts",
+        "default-test-views-uncontrolled.tsx",
+        "default-test-views-controlled.tsx"
     ]
 }
