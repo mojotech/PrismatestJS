@@ -210,5 +210,7 @@ const testRoot = "abcdefghijklmnopqrstuvwxyz";
     // TODO: Fix
     // $ExpectError
     a.materialize(e);
+
+    a.materialize<any>(e);
   }
 }
