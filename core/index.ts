@@ -83,10 +83,10 @@ type ParameterizedSelector<S, F> = F extends (...args: any[]) => S
 // testView((name: string) => "selector", {})
 // testView(testView((name: string) => "selector, {})) - Bad! How does name get supplied? Type error
 interface TestView<S, E, A, B, F> {
-  materialize(
+  materialize: <MA extends ParameterizedSelectorArgs<S, F>>(
     e: E,
-    ...selectorArgs: ParameterizedSelectorArgs<S, F>
-  ): MaterializedTestView<E, A, B>;
+    ...selectorArgs: MA
+  ) => MaterializedTestView<E, A, B>;
   selector: ParameterizedSelector<S, F>;
   actions: A;
   aggregates: B;
@@ -174,16 +174,16 @@ const makeTestViewConstructor = <S, E>(
     view.actions = actions;
     view.aggregates = aggregate;
     view.selector = selector;
-    view.materialize = (
+    view.materialize = <MA extends ParameterizedSelectorArgs<S, F>>(
       root: E,
-      ...selectorArgs: ParameterizedSelectorArgs<S, F>
+      ...selectorArgs: MA
     ) => {
       const renderedSelector =
         selector instanceof Function ? selector(...selectorArgs) : selector;
       const defaultActions: MaterializedActionMap<E, DefaultActions<E>> = {
         get: actionRealizer(renderedSelector, (e: E) => e, root)
       };
-      const materializedActions = {} as MaterializedActionMap<E, A>;
+      const materializedActions = { ...defaultActions } as MaterializedActionMap<E, A & DefaultActions<E>>;
 
       for (let action in actions) {
         if (actions.hasOwnProperty(action)) {
@@ -208,10 +208,9 @@ const makeTestViewConstructor = <S, E>(
       }
 
       return {
-        ...defaultActions,
         ...materializedActions,
         ...materializedAggregate,
-        actions: { ...defaultActions, ...materializedActions },
+        actions: materializedActions,
         aggregates: materializedAggregate
       };
     };
