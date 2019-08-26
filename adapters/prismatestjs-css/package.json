@@ -12,13 +12,13 @@
     "react-dom": "^16.8.6"
   },
   "devDependencies": {
+    "@mojotech/prismatest-adapter-tests": "^0.1.6",
     "@types/jest": "^24.0.13",
     "@types/react-dom": "^16.8.4",
     "jest": "^24.8.0",
     "prettier": "^1.17.1",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.5.1",
-    "@mojotech/prismatest-adapter-tests": "^0.1.6"
+    "typescript": "^3.5.1"
   },
   "scripts": {
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
