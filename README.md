@@ -47,10 +47,10 @@ your specifications.
       const form = testView.defaultViews.form.materialize(app);
       const formInputs = testView.defaultViews.textInput.materialize(app);
 
-      formInputs.actions.enterText.at(1, 'John Doe');
-      formInputs.actions.enterText.at(2, 'john@example.com');
+      formInputs.enterText.at(1, 'John Doe');
+      formInputs.enterText.at(2, 'john@example.com');
 
-      form.actions.submit();
+      form.submit();
     });
     ```
 
@@ -73,11 +73,11 @@ your specifications.
       const formErrors = FormErrors.materialize(app);
       const nameInput = NameInput.materialize(app);
 
-      form.actions.submit();
-      expect(formErrors.actions.errorText.one()).toEqual('Name is required');
-      nameInput.actions.enterText.one('John Doe');
-      form.actions.submit();
-      expect(formErrors.actions.errorText()).toEqual([]);
+      form.submit();
+      expect(formErrors.errorText.one()).toEqual('Name is required');
+      nameInput.enterText.one('John Doe');
+      form.submit();
+      expect(formErrors.errorText()).toEqual([]);
     });
     ```
 

@@ -10,7 +10,8 @@ in your tests.
 Implementing adapters requires specifying two types and three functions.
 Adapters specify the type of elements they interact with and the type of
 selectors they run. They also specify how selectors are composed, how selectors
-are executed, and how selector results are iterated.
+are executed, and how selector results are iterated. Selectors cannot be
+functions, but they can be classes.
 
 ### Composing Selectors
 

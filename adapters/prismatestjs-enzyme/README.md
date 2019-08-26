@@ -51,5 +51,5 @@ selector: (enzymeSelector) => SelectorType
 
     const todo = TodoView.materialize(rendered);
 
-    todo.actions.addTodo("Write some tests!");
+    todo.addTodo("Write some tests!");
     ```

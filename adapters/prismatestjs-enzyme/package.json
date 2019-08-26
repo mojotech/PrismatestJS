@@ -1,6 +1,6 @@
 {
   "name": "@mojotech/prismatest-enzyme",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Enzyme adapter for use with @mojotech/prismatest",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

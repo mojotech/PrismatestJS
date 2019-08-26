@@ -45,6 +45,6 @@ commas. This is effectively a cartesian product.
     const todoInput = TodoView(testView.defaultViews.textInput).materialize(rendered);
     const todoSubmit = TodoView(testView.defaultViews.button).materialize(rendered);
 
-    todoInput.actions.enterText("Write some tests!");
-    todoSubmit.actions.click();
+    todoInput.enterText("Write some tests!");
+    todoSubmit.click();
     ```
