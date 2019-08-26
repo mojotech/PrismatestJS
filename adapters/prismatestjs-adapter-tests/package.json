@@ -1,6 +1,6 @@
 {
   "name": "@mojotech/prismatest-adapter-tests",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Tests for the adapters used with the Prismatest library",
   "author": "Mojotech",
   "license": "MIT",
@@ -28,6 +28,7 @@
   },
   "files": [
     "dist/index.js",
+    "dist/index.d.ts",
     "dist/default-test-views-uncontrolled.js",
     "dist/default-test-views-uncontrolled.d.ts",
     "dist/default-test-views-controlled.js",
