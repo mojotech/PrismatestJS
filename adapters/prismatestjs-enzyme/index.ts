@@ -5,7 +5,7 @@ import {
   IterateSelector,
   DefaultViews
 } from '@mojotech/prismatest';
-import { ReactWrapper } from 'enzyme';
+import { ReactWrapper, StatelessComponent, ComponentType, EnzymePropSelector } from 'enzyme';
 
 // This adapter works with enzyme ReactWrappers
 class SelectorType {
@@ -32,9 +32,13 @@ const iterateSelector: IterateSelector<ElementType, ElementGroupType> = (
   fn
 ) => nodes.map(fn);
 
-export const selector = (
-  ...args: Parameters<ReactWrapper['find']>
-): SelectorType => new SelectorType(e => e.find(...args));
+export function selector(arg: string): SelectorType;
+export function selector<P2>(arg: StatelessComponent<P2>): SelectorType;
+export function selector<P2>(arg: ComponentType<P2>): SelectorType;
+export function selector(arg: EnzymePropSelector): SelectorType;
+export function selector(arg: any): any {
+  return new SelectorType(e => e.find(arg));
+};
 
 // Apparently, Enzyme isn't really intended to manipulate the raw DOM nodes,
 // only React components. As such this is basically the same code as from the
