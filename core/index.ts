@@ -69,13 +69,11 @@ type MaterializedTestView<E, A, B> = MaterializedActionMap<
 
 type ParameterizedSelectorDiscriminator<S> = ((...args: any[]) => S) | S;
 
-type ParameterizedSelectorArgs<
-  S, F
-> = F extends (...args: infer Args) => S ? Args : [];
+type ParameterizedSelectorArgs<S, F> = F extends (...args: infer Args) => S
+  ? Args
+  : [];
 
-type ParameterizedSelector<S, F> = F extends (...args: any[]) => S
-    ? F
-    : S;
+type ParameterizedSelector<S, F> = F extends (...args: any[]) => S ? F : S;
 
 // Only the first selector should be able to be parameterized
 // testView.run(e, "submit")
@@ -96,7 +94,11 @@ interface TestView<S, E, A, B, F> {
 }
 
 export interface TestViewConstructor<S, E> {
-  <A extends ActionMap<E>, B extends AggregateMap<E>, F extends ParameterizedSelectorDiscriminator<S>>(
+  <
+    A extends ActionMap<E>,
+    B extends AggregateMap<E>,
+    F extends ParameterizedSelectorDiscriminator<S>
+  >(
     selector: ParameterizedSelector<S, F>,
     actions?: A,
     aggregates?: B
@@ -183,7 +185,9 @@ const makeTestViewConstructor = <S, E>(
       const defaultActions: MaterializedActionMap<E, DefaultActions<E>> = {
         get: actionRealizer(renderedSelector, (e: E) => e, root)
       };
-      const materializedActions = { ...defaultActions } as MaterializedActionMap<E, A & DefaultActions<E>>;
+      const materializedActions = {
+        ...defaultActions
+      } as MaterializedActionMap<E, A & DefaultActions<E>>;
 
       for (let action in actions) {
         if (actions.hasOwnProperty(action)) {
@@ -223,10 +227,7 @@ const makeTestViewConstructor = <S, E>(
       defaultViews.checkbox.selector,
       defaultViews.checkbox.actions
     ),
-    radio: testView(
-      defaultViews.radio.selector,
-      defaultViews.radio.actions
-    ),
+    radio: testView(defaultViews.radio.selector, defaultViews.radio.actions),
     textInput: testView(
       defaultViews.textInput.selector,
       defaultViews.textInput.actions
@@ -240,10 +241,7 @@ const makeTestViewConstructor = <S, E>(
       defaultViews.multiSelect.actions
     ),
     form: testView(defaultViews.form.selector, defaultViews.form.actions),
-    button: testView(
-      defaultViews.button.selector,
-      defaultViews.button.actions
-    )
+    button: testView(defaultViews.button.selector, defaultViews.button.actions)
   };
 
   testView.defaultViews = materializedDefaultViews;

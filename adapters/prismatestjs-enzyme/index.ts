@@ -5,7 +5,12 @@ import {
   IterateSelector,
   DefaultViews
 } from '@mojotech/prismatest';
-import { ReactWrapper, StatelessComponent, ComponentType, EnzymePropSelector } from 'enzyme';
+import {
+  ReactWrapper,
+  StatelessComponent,
+  ComponentType,
+  EnzymePropSelector
+} from 'enzyme';
 
 // This adapter works with enzyme ReactWrappers
 class SelectorType {
@@ -38,7 +43,7 @@ export function selector<P2>(arg: ComponentType<P2>): SelectorType;
 export function selector(arg: EnzymePropSelector): SelectorType;
 export function selector(arg: any): any {
   return new SelectorType(e => e.find(arg));
-};
+}
 
 // Apparently, Enzyme isn't really intended to manipulate the raw DOM nodes,
 // only React components. As such this is basically the same code as from the
@@ -93,12 +98,11 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
   },
   textInput: {
     selector: new SelectorType(n =>
-      n
-        .findWhere(
-          e =>
-            (e.type() === 'input' && e.prop('type') === 'text') ||
-            e.type() === 'textarea'
-        )
+      n.findWhere(
+        e =>
+          (e.type() === 'input' && e.prop('type') === 'text') ||
+          e.type() === 'textarea'
+      )
     ),
     actions: {
       enterText: (e, text) => {

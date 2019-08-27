@@ -61,7 +61,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     actions: {
       toggle: e => {
         (e as HTMLInputElement).checked = !(e as HTMLInputElement).checked;
-        Simulate.change(e, { currentTarget: e,  target: e });
+        Simulate.change(e, { currentTarget: e, target: e });
       },
       isChecked: e => (e as HTMLInputElement).checked,
       getValue: e => (e as HTMLInputElement).value
@@ -73,7 +73,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     actions: {
       select: e => {
         (e as HTMLInputElement).checked = true;
-        Simulate.change(e, { currentTarget: e,  target: e });
+        Simulate.change(e, { currentTarget: e, target: e });
       },
       // There's lots of casting in this function. That's a bit unfortunate but
       // I don't see a great way around it. The failure mode if the casts fail
@@ -88,7 +88,8 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
         const radios =
           parent &&
           parent.querySelectorAll(
-            `:scope > input[type='radio'][name='${(e as HTMLInputElement).name || e.id}'`
+            `:scope > input[type='radio'][name='${(e as HTMLInputElement)
+              .name || e.id}'`
           );
         if (radios) {
           for (let i = 0; i < radios.length; i++) {
