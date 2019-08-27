@@ -10,9 +10,15 @@ class.
 
 ## Selector Type
 
-Selectors are specified using functions. These functions take the current
+Selectors are specified using the `Selector` class. This class wraps a function that takes the current
 element that has been selected and may call methods on it to narrow down the
-selection further.
+selection further. For example:
+
+```
+import { Selector } from '@mojotech/prismatest-enzyme';
+
+new Selector(e => e.find('.cool-class'))
+```
 
 ### Selector Helper
 
@@ -44,10 +50,10 @@ selector: (enzymeSelector) => SelectorType
 3. Use some test views
 
     ```javascript
-    import testView from "@mojotech/prismatest-enzyme";
+    import testView, { selector } from "@mojotech/prismatest-enzyme";
     import TodoComponent from './todo-component';
 
-    const TodoView = testView(TodoComponent, { addTodo: (e, text) => e.props().addTodo(text) });
+    const TodoView = testView(selector(TodoComponent), { addTodo: (e, text) => e.props().addTodo(text) });
 
     const todo = TodoView.materialize(rendered);
 
