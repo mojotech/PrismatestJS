@@ -29,34 +29,44 @@ class Controller<V> extends React.Component<Props<V>, State<V>> {
 
   onChange = (newValue?: V) => {
     this.setState({ value: newValue });
-  }
+  };
 }
 
-class CheckboxController extends Controller<boolean> {};
-class RadioController extends Controller<string> {};
-class TextController extends Controller<string> {};
-class SingleSelectController extends Controller<string> {};
-class MultipleSelectController extends Controller<string[]> {};
+class CheckboxController extends Controller<boolean> {}
+class RadioController extends Controller<string> {}
+class TextController extends Controller<string> {}
+class SingleSelectController extends Controller<string> {}
+class MultipleSelectController extends Controller<string[]> {}
 
 export const generateTests = <S, E>(
   adapter: TestViewConstructor<S, E>,
   render: (e: React.ReactElement) => E
 ) => {
-  describe("controlled component tests", () => {
+  describe('controlled component tests', () => {
     describe('checkbox', () => {
       const checkboxValue = 'cb-value';
       const unchecked = (
         <CheckboxController defaultValue={false}>
-          {(onChange, value) =>
-            <input type="checkbox" value={checkboxValue} checked={value} onChange={(e) => onChange(e.target.checked)} />
-          }
+          {(onChange, value) => (
+            <input
+              type="checkbox"
+              value={checkboxValue}
+              checked={value}
+              onChange={e => onChange(e.target.checked)}
+            />
+          )}
         </CheckboxController>
       );
       const checked = (
         <CheckboxController defaultValue={true}>
-          {(onChange, value) =>
-            <input type="checkbox" value={checkboxValue} checked={value} onChange={(e) => onChange(e.target.checked)}/>
-          }
+          {(onChange, value) => (
+            <input
+              type="checkbox"
+              value={checkboxValue}
+              checked={value}
+              onChange={e => onChange(e.target.checked)}
+            />
+          )}
         </CheckboxController>
       );
 
@@ -116,12 +126,24 @@ export const generateTests = <S, E>(
       const value2 = 'rb-two';
       const radios = (
         <RadioController>
-          {(onChange, value) =>
+          {(onChange, value) => (
             <form>
-              <input type="radio" name="radio" value={value1} checked={value === value1} onChange={(e) => onChange(e.target.value)} />
-              <input type="radio" name="radio" value={value2} checked={value === value2} onChange={(e) => onChange(e.target.value)} />
+              <input
+                type="radio"
+                name="radio"
+                value={value1}
+                checked={value === value1}
+                onChange={e => onChange(e.target.value)}
+              />
+              <input
+                type="radio"
+                name="radio"
+                value={value2}
+                checked={value === value2}
+                onChange={e => onChange(e.target.value)}
+              />
             </form>
-          }
+          )}
         </RadioController>
       );
 
@@ -167,21 +189,30 @@ export const generateTests = <S, E>(
       const inputs = render(
         <div>
           <TextController>
-            {(onChange, value) =>
-              <input type="text" value={value || ""} onChange={(e) => onChange(e.target.value)} />
-            }
+            {(onChange, value) => (
+              <input
+                type="text"
+                value={value || ''}
+                onChange={e => onChange(e.target.value)}
+              />
+            )}
           </TextController>
           <TextController>
-            {(onChange, value) =>
-              <textarea value={value || ""} onChange={(e) => onChange(e.target.value)} />
-            }
+            {(onChange, value) => (
+              <textarea
+                value={value || ''}
+                onChange={e => onChange(e.target.value)}
+              />
+            )}
           </TextController>
         </div>
       );
 
       test('setting a value and getting it returns the value', () => {
         const testText = 'test-text';
-        const materialized = adapter.defaultViews.textInput.materialize<any>(inputs);
+        const materialized = adapter.defaultViews.textInput.materialize<any>(
+          inputs
+        );
 
         expect(
           materialized.getText(),
@@ -201,19 +232,22 @@ export const generateTests = <S, E>(
       const testValue3 = 'three';
       const selectSingle = (
         <SingleSelectController>
-          {(onChange, value) =>
-            <select value={value} onChange={(e) => onChange(e.target.value)}>
+          {(onChange, value) => (
+            <select value={value} onChange={e => onChange(e.target.value)}>
               <option value="">Placeholder</option>
               <option value={testValue1}>One</option>
               <option value={testValue2}>Two</option>
             </select>
-          }
+          )}
         </SingleSelectController>
       );
       const selectMultiple = (
         <MultipleSelectController defaultValue={[]}>
-          {(onChange, value) =>
-            <select multiple value={value} onChange={(e) => {
+          {(onChange, value) => (
+            <select
+              multiple
+              value={value}
+              onChange={e => {
                 const options = e.target.options;
                 const value = [];
                 for (let i = 0, l = options.length; i < l; i++) {
@@ -222,12 +256,13 @@ export const generateTests = <S, E>(
                   }
                 }
                 onChange(value);
-            }}>
+              }}
+            >
               <option value={testValue1}>One</option>
               <option value={testValue2}>Two</option>
               <option value={testValue3}>Three</option>
             </select>
-          }
+          )}
         </MultipleSelectController>
       );
       const selects = (
@@ -239,9 +274,9 @@ export const generateTests = <S, E>(
 
       describe('singleSelect', () => {
         test('selecting a value and getting the selection returns the value', () => {
-          const materialized = adapter.defaultViews.singleSelect.materialize<any>(
-            render(selectSingle)
-          );
+          const materialized = adapter.defaultViews.singleSelect.materialize<
+            any
+          >(render(selectSingle));
 
           expect(
             materialized.getSelection.one(),
@@ -255,9 +290,9 @@ export const generateTests = <S, E>(
         });
 
         test('selecting a value replaces the old value', () => {
-          const materialized = adapter.defaultViews.singleSelect.materialize<any>(
-            render(selectSingle)
-          );
+          const materialized = adapter.defaultViews.singleSelect.materialize<
+            any
+          >(render(selectSingle));
 
           materialized.select(testValue1);
           expect(
@@ -272,9 +307,9 @@ export const generateTests = <S, E>(
         });
 
         test('does not select the multi-select', () => {
-          const materialized = adapter.defaultViews.singleSelect.materialize<any>(
-            render(selects)
-          );
+          const materialized = adapter.defaultViews.singleSelect.materialize<
+            any
+          >(render(selects));
 
           expect(
             () => materialized.get.one(),
@@ -285,9 +320,9 @@ export const generateTests = <S, E>(
 
       describe('multipleSelect', () => {
         test('selecting some values and getting the selection returns the values', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selectMultiple)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selectMultiple));
 
           expect(
             materialized.getSelection.one(),
@@ -301,9 +336,9 @@ export const generateTests = <S, E>(
         });
 
         test('selecting some values replaces the old values', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selectMultiple)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selectMultiple));
 
           materialized.select([testValue1, testValue2]);
           expect(
@@ -318,9 +353,9 @@ export const generateTests = <S, E>(
         });
 
         test('selecting no values returns no values', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selectMultiple)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selectMultiple));
 
           materialized.select([testValue1, testValue2]);
           expect(
@@ -335,9 +370,9 @@ export const generateTests = <S, E>(
         });
 
         test('does not select the single-select', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selects)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selects));
 
           expect(
             () => materialized.get.one(),
@@ -348,4 +383,3 @@ export const generateTests = <S, E>(
     });
   });
 };
-

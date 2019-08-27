@@ -9,7 +9,7 @@ export const generateTests = <S, E>(
   adapter: TestViewConstructor<S, E>,
   render: (e: React.ReactElement) => E
 ) => {
-  describe("uncontrolled component tests", () => {
+  describe('uncontrolled component tests', () => {
     describe('checkbox', () => {
       const checkboxValue = 'cb-value';
       const unchecked = <input type="checkbox" value={checkboxValue} />;
@@ -126,7 +126,9 @@ export const generateTests = <S, E>(
 
       test('setting a value and getting it returns the value', () => {
         const testText = 'test-text';
-        const materialized = adapter.defaultViews.textInput.materialize<any>(inputs);
+        const materialized = adapter.defaultViews.textInput.materialize<any>(
+          inputs
+        );
 
         expect(
           materialized.getText(),
@@ -167,9 +169,9 @@ export const generateTests = <S, E>(
 
       describe('singleSelect', () => {
         test('selecting a value and getting the selection returns the value', () => {
-          const materialized = adapter.defaultViews.singleSelect.materialize<any>(
-            render(selectSingle)
-          );
+          const materialized = adapter.defaultViews.singleSelect.materialize<
+            any
+          >(render(selectSingle));
 
           expect(
             materialized.getSelection.one(),
@@ -183,9 +185,9 @@ export const generateTests = <S, E>(
         });
 
         test('selecting a value replaces the old value', () => {
-          const materialized = adapter.defaultViews.singleSelect.materialize<any>(
-            render(selectSingle)
-          );
+          const materialized = adapter.defaultViews.singleSelect.materialize<
+            any
+          >(render(selectSingle));
 
           materialized.select(testValue1);
           expect(
@@ -200,9 +202,9 @@ export const generateTests = <S, E>(
         });
 
         test('does not select the multi-select', () => {
-          const materialized = adapter.defaultViews.singleSelect.materialize<any>(
-            render(selects)
-          );
+          const materialized = adapter.defaultViews.singleSelect.materialize<
+            any
+          >(render(selects));
 
           expect(
             () => materialized.get.one(),
@@ -213,9 +215,9 @@ export const generateTests = <S, E>(
 
       describe('multipleSelect', () => {
         test('selecting some values and getting the selection returns the values', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selectMultiple)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selectMultiple));
 
           expect(
             materialized.getSelection.one(),
@@ -229,9 +231,9 @@ export const generateTests = <S, E>(
         });
 
         test('selecting some values replaces the old values', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selectMultiple)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selectMultiple));
 
           materialized.select([testValue1, testValue2]);
           expect(
@@ -246,9 +248,9 @@ export const generateTests = <S, E>(
         });
 
         test('selecting no values returns no values', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selectMultiple)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selectMultiple));
 
           materialized.select([testValue1, testValue2]);
           expect(
@@ -263,9 +265,9 @@ export const generateTests = <S, E>(
         });
 
         test('does not select the single-select', () => {
-          const materialized = adapter.defaultViews.multiSelect.materialize<any>(
-            render(selects)
-          );
+          const materialized = adapter.defaultViews.multiSelect.materialize<
+            any
+          >(render(selects));
 
           expect(
             () => materialized.get.one(),
@@ -286,7 +288,9 @@ export const generateTests = <S, E>(
       );
 
       test('calls submit handler', () => {
-        const materialized = adapter.defaultViews.form.materialize<any>(render(form));
+        const materialized = adapter.defaultViews.form.materialize<any>(
+          render(form)
+        );
 
         expect(flag, 'Should not have called submit handler').toEqual(false);
         materialized.submit.one();
@@ -342,7 +346,9 @@ export const generateTests = <S, E>(
           .form(adapter.defaultViews.button)
           .materialize<any>(render(buttons));
 
-        expect(inputFlag, 'Should not have called click handler').toEqual(false);
+        expect(inputFlag, 'Should not have called click handler').toEqual(
+          false
+        );
         materialized.click.at(2);
         expect(inputFlag, 'Should have called click handler').toEqual(true);
       });
@@ -352,7 +358,9 @@ export const generateTests = <S, E>(
           .form(adapter.defaultViews.button)
           .materialize<any>(render(buttons));
 
-        expect(submitFlag, 'Should not have called click handler').toEqual(false);
+        expect(submitFlag, 'Should not have called click handler').toEqual(
+          false
+        );
         materialized.click.at(3);
         expect(submitFlag, 'Should have called click handler').toEqual(true);
       });

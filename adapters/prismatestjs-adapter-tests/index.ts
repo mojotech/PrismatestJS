@@ -1,9 +1,7 @@
-import { generateTests as controlledTests } from "./default-test-views-controlled";
-import { generateTests as uncontrolledTests } from "./default-test-views-uncontrolled";
+import { generateTests as controlledTests } from './default-test-views-controlled';
+import { generateTests as uncontrolledTests } from './default-test-views-uncontrolled';
 import * as React from 'react';
-import {
-  TestViewConstructor,
-} from '@mojotech/prismatest';
+import { TestViewConstructor } from '@mojotech/prismatest';
 
 export const generateTests = <S, E>(
   adapter: TestViewConstructor<S, E>,
