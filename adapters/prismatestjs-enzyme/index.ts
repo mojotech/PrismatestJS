@@ -13,7 +13,7 @@ import {
 } from 'enzyme';
 
 // This adapter works with enzyme ReactWrappers
-class SelectorType {
+export class Selector {
   public run: (e: ReactWrapper) => ReactWrapper;
 
   constructor(run: (e: ReactWrapper) => ReactWrapper) {
@@ -21,11 +21,12 @@ class SelectorType {
   }
 }
 
+type SelectorType = Selector;
 type ElementType = ReactWrapper;
 type ElementGroupType = ReactWrapper;
 
 const composeSelectors: ComposeSelectors<SelectorType> = (a, b) =>
-  new SelectorType(s => b.run(a.run(s)));
+  new Selector(s => b.run(a.run(s)));
 
 const runSelector: RunSelector<SelectorType, ElementType, ElementGroupType> = (
   selector,
@@ -42,7 +43,7 @@ export function selector<P2>(arg: StatelessComponent<P2>): SelectorType;
 export function selector<P2>(arg: ComponentType<P2>): SelectorType;
 export function selector(arg: EnzymePropSelector): SelectorType;
 export function selector(arg: any): any {
-  return new SelectorType(e => e.find(arg));
+  return new Selector(e => e.find(arg));
 }
 
 // Apparently, Enzyme isn't really intended to manipulate the raw DOM nodes,
@@ -97,7 +98,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     aggregate: {}
   },
   textInput: {
-    selector: new SelectorType(n =>
+    selector: new Selector(n =>
       n.findWhere(
         e =>
           (e.type() === 'input' && e.prop('type') === 'text') ||
@@ -171,7 +172,7 @@ const defaultViews: DefaultViews<SelectorType, ElementType> = {
     aggregate: {}
   },
   button: {
-    selector: new SelectorType(e =>
+    selector: new Selector(e =>
       e.findWhere(
         n =>
           n.type() === 'button' ||
