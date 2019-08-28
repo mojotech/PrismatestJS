@@ -1,6 +1,6 @@
 {
   "name": "@mojotech/prismatest-adapter-tests",
-  "version": "0.1.8",
+  "version": "1.0.0",
   "description": "Tests for the adapters used with the Prismatest library",
   "author": "Mojotech",
   "license": "MIT",
