@@ -1,6 +1,6 @@
 {
   "name": "@mojotech/prismatest-examples",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Examples of using the PrismatestJS library",
   "main": "",
   "types": "",
