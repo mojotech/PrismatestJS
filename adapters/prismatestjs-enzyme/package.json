@@ -29,7 +29,7 @@
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
     "clean": "rm -rf ./dist",
     "ts": "tsc --listFiles -w --noEmit",
-    "format": "prettier --write *.ts",
+    "format": "prettier --write \"*.ts\"",
     "test": "jest"
   },
   "files": [
