@@ -23,7 +23,7 @@
     "ts": "tsc --listFiles -w --noEmit",
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
     "clean": "rm -rf ./dist",
-    "format": "prettier --write *.{ts,tsx}",
+    "format": "prettier --write \"*.{ts,tsx}\"",
     "test": "echo 'No tests!'"
   },
   "files": [

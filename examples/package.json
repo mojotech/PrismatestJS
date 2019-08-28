@@ -25,7 +25,7 @@
   },
   "scripts": {
     "ts": "tsc --listFiles -w --noEmit",
-    "format": "prettier --write *.{ts,tsx}",
+    "format": "prettier --write \"*.{ts,tsx}\"",
     "build": "echo 'No build!'",
     "clean": "echo 'No clean!'",
     "test": "jest"

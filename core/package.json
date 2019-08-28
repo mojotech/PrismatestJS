@@ -18,7 +18,7 @@
     "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
     "ts": "tsc --listFiles -w --noEmit",
     "clean": "rm -rf ./dist",
-    "format": "prettier --write index.ts",
+    "format": "prettier --write \"*.ts\" \"types/*.ts\"",
     "test": "yarn dtslint && jest",
     "dtslint": "tsc -d --emitDeclarationOnly --outDir ./types && dtslint --expectOnly --localTs node_modules/typescript/lib types && rm ./types/index.d.ts"
   },
