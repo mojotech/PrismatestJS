@@ -34,7 +34,7 @@ a selector and some actions. Default test views are also provided.
 Adapters have a default export that is a function to create test views.
 
 ```typescript
-testView(selector: SelectorType, actions: ?ActionMap): TestView
+testView(selector: SelectorType, actions: ?ActionMap, aggregateActions: ?AggregateMap): TestView
 ```
 
 #### Parameters
@@ -52,6 +52,15 @@ testView(selector: SelectorType, actions: ?ActionMap): TestView
     Each function must take as its first argument the element being operated
     on. This is not supplied when the action is invoked. The functions may take
     other arguments that will be supplied when the action is invoked.
+
+- aggregate actions (optional)
+
+    Describes the aggregate actions that are available on this test view once
+    it is materialized. It takes the form of a map from action names to
+    functions. Each function must take as its first argument an array of each
+    element that was selected. This is not supplied when the action is invoked.
+    The functions may take other arguments that will be supplied when the
+    action is invoked.
 
 #### Return Type
 
