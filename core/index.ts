@@ -255,6 +255,7 @@ export class MultipleSelectedElementsError<S, E> extends Error {
 
 	constructor(selector: S, root: E, ...args: any[]) {
 		super(...args);
+		Object.setPrototypeOf(this, new.target.prototype);
 		this.name = "MultipleSelectedElementsError";
 		this.selector = selector;
 		this.root = root;
@@ -268,6 +269,7 @@ export class ZeroSelectedElementsError<S, E> extends Error {
 
 	constructor(selector: S, root: E, ...args: any[]) {
 		super(...args);
+		Object.setPrototypeOf(this, new.target.prototype);
 		this.name = "ZeroSelectedElementsError";
 		this.selector = selector;
 		this.root = root;
@@ -282,6 +284,7 @@ export class IndexOutOfBoundsError<S, E> extends Error {
 
 	constructor(index: number, selector: S, root: E, ...args: any[]) {
 		super(...args);
+		Object.setPrototypeOf(this, new.target.prototype);
 		this.name = "IndexOutOfBoundsError";
 		this.selector = selector;
 		this.root = root;
