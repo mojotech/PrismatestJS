@@ -27,6 +27,8 @@ const testView: TestViewConstructor<SelectorType, ElementType> = makeAdapter(
   composeSelectors,
   runSelector,
   iterateSelector,
+  (x) => x,
+  (x) => x,
   (({} as any) as DefaultViews<SelectorType, ElementType>)
 );
 

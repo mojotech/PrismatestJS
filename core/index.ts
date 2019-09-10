@@ -249,31 +249,64 @@ const makeTestViewConstructor = <S, E>(
 	return testView;
 };
 
+const printElements = <E>(elements: E[], printer: Printer<E>): string => {
+	if (elements.length === 0) {
+		return "[]";
+	}
+	return ["[", ...elements.map(e => `\t"${printer(e)}",`), "]"].join("\n\t");
+};
+
 export class MultipleSelectedElementsError<S, E> extends Error {
 	selector: S;
 	root: E;
+	elements: E[];
 
-	constructor(selector: S, root: E, ...args: any[]) {
+	constructor(
+		selector: S,
+		root: E,
+		elements: E[],
+		printSelector: Printer<S>,
+		printElement: Printer<E>,
+		...args: any[]
+	) {
 		super(...args);
 		Object.setPrototypeOf(this, new.target.prototype);
 		this.name = "MultipleSelectedElementsError";
 		this.selector = selector;
 		this.root = root;
-		this.message = `Selector: ${selector} returned multiple elements at root: ${root}`;
+		this.elements = elements;
+		this.message =
+			"Multiple elements returned by selector:\n" +
+			`\tSelector: "${printSelector(selector)}"\n` +
+			`\tRoot: "${printElement(root)}"\n` +
+			`\tSelected: ${printElements(elements, printElement)}`;
 	}
 }
 
 export class ZeroSelectedElementsError<S, E> extends Error {
 	selector: S;
 	root: E;
+	elements: E[];
 
-	constructor(selector: S, root: E, ...args: any[]) {
+	constructor(
+		selector: S,
+		root: E,
+		elements: E[],
+		printSelector: Printer<S>,
+		printElement: Printer<E>,
+		...args: any[]
+	) {
 		super(...args);
 		Object.setPrototypeOf(this, new.target.prototype);
 		this.name = "ZeroSelectedElementsError";
 		this.selector = selector;
 		this.root = root;
-		this.message = `Selector: ${selector} returned zero elements at root: ${root}`;
+		this.elements = elements;
+		this.message =
+			"Zero elements returned by selector\n" +
+			`\tSelector: "${printSelector(selector)}"\n` +
+			`\tRoot: "${printElement(root)}"\n` +
+			`\tSelected: ${printElements(elements, printElement)}`;
 	}
 }
 
@@ -281,15 +314,30 @@ export class IndexOutOfBoundsError<S, E> extends Error {
 	selector: S;
 	root: E;
 	index: number;
+	elements: E[];
 
-	constructor(index: number, selector: S, root: E, ...args: any[]) {
+	constructor(
+		index: number,
+		selector: S,
+		root: E,
+		elements: E[],
+		printSelector: Printer<S>,
+		printElement: Printer<E>,
+		...args: any[]
+	) {
 		super(...args);
 		Object.setPrototypeOf(this, new.target.prototype);
 		this.name = "IndexOutOfBoundsError";
 		this.selector = selector;
 		this.root = root;
+		this.elements = elements;
 		this.index = index;
-		this.message = `Index: ${index} of Selector: ${selector} returned no element at root: ${root}`;
+		this.message =
+			"Index out of bounds\n" +
+			`\tIndex: ${index}\n` +
+			`\tSelector: "${printSelector(selector)}"\n` +
+			`\tRoot: "${printElement(root)}"\n` +
+			`\tSelected: ${printElements(elements, printElement)}`;
 	}
 }
 
@@ -300,7 +348,9 @@ const makeActionMaterializer = <S, E, EG>(
 	forEachElement: <A extends Action<E>>(
 		elements: EG,
 		fn: (e: E) => ReturnType<A>
-	) => ReturnType<A>[]
+	) => ReturnType<A>[],
+	printSelector: Printer<S>,
+	printElement: Printer<E>
 ) => <A extends Action<E>>(
 	selector: S,
 	action: A,
@@ -317,10 +367,22 @@ const makeActionMaterializer = <S, E, EG>(
 		);
 
 		if (elements.length === 0) {
-			throw new ZeroSelectedElementsError(selector, root);
+			throw new ZeroSelectedElementsError(
+				selector,
+				root,
+				elements,
+				printSelector,
+				printElement
+			);
 		}
 		if (elements.length > 1) {
-			throw new MultipleSelectedElementsError(selector, root);
+			throw new MultipleSelectedElementsError(
+				selector,
+				root,
+				elements,
+				printSelector,
+				printElement
+			);
 		}
 
 		return elements.map<ReturnType<A>>(e => action(e, ...args))[0];
@@ -333,10 +395,23 @@ const makeActionMaterializer = <S, E, EG>(
 		const offset = n - 1;
 
 		if (elements.length === 0) {
-			throw new ZeroSelectedElementsError(selector, root);
+			throw new ZeroSelectedElementsError(
+				selector,
+				root,
+				elements,
+				printSelector,
+				printElement
+			);
 		}
 		if (elements[offset] === null || elements[offset] === undefined) {
-			throw new IndexOutOfBoundsError(n, selector, root);
+			throw new IndexOutOfBoundsError(
+				n,
+				selector,
+				root,
+				elements,
+				printSelector,
+				printElement
+			);
 		}
 
 		return action(elements[offset], ...args);
@@ -363,16 +438,24 @@ export type IterateSelector<E, EG> = <A extends Action<E>>(
 	elements: EG,
 	fn: (e: E) => ReturnType<A>
 ) => ReturnType<A>[];
+export type Printer<T> = (x: T) => string;
 
 export const makeAdapter = <S, E, EG>(
 	composeSelectors: ComposeSelectors<S>,
 	runSelector: RunSelector<S, E, EG>,
 	iterateSelector: IterateSelector<E, EG>,
+	printSelector: Printer<S>,
+	printElement: Printer<E>,
 	defaultViews: DefaultViews<S, E>
 ) =>
 	makeTestViewConstructor<S, E>(
 		composeSelectors,
-		makeActionMaterializer<S, E, EG>(runSelector, iterateSelector),
+		makeActionMaterializer<S, E, EG>(
+			runSelector,
+			iterateSelector,
+			printSelector,
+			printElement
+		),
 		makeAggregateRealizer<S, E, EG>(runSelector, iterateSelector),
 		defaultViews
 	);
