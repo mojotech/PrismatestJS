@@ -3,7 +3,8 @@ import {
 	ComposeSelectors,
 	RunSelector,
 	IterateSelector,
-	DefaultViews
+	DefaultViews,
+	Printer
 } from "@mojotech/prismatest";
 import { Simulate } from "react-dom/test-utils";
 
@@ -41,6 +42,9 @@ const iterateSelector: IterateSelector<ElementType, ElementGroupType> = (
 	}
 	return result;
 };
+
+const printSelector: Printer<SelectorType> = selector => selector;
+const printElement: Printer<ElementType> = element => element.outerHTML;
 
 const findSelectOption = (
 	options: HTMLOptionsCollection,
@@ -191,5 +195,7 @@ export default makeAdapter(
 	composeSelectors,
 	runSelector,
 	iterateSelector,
+	printSelector,
+	printElement,
 	defaultViews
 );
