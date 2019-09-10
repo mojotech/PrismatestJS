@@ -15,7 +15,9 @@ type AParameters<AType extends (...args: any[]) => any> = Tail<
 type Aggregate<E> = (e: E[], ...args: any[]) => any;
 type AggregateParameters<E, A extends Aggregate<E>> = AParameters<A>;
 type AggregateMap<E> = { [k: string]: Aggregate<E> };
-type DefaultAggregates = {};
+type DefaultAggregates<E> = {
+	printRoot: (e: E[]) => string;
+};
 
 // Materialized aggregate types
 type MaterializedAggregate<E, A extends Aggregate<E>> = (
@@ -63,9 +65,9 @@ type MaterializedTestView<E, A, B> = MaterializedActionMap<
 	E,
 	A & DefaultActions<E>
 > &
-	MaterializedAggregateMap<E, B & DefaultAggregates> & {
+	MaterializedAggregateMap<E, B & DefaultAggregates<E>> & {
 		actions: MaterializedActionMap<E, A & DefaultActions<E>>;
-		aggregates: MaterializedAggregateMap<E, B & DefaultAggregates>;
+		aggregates: MaterializedAggregateMap<E, B & DefaultAggregates<E>>;
 	};
 
 type ParameterizedSelectorDiscriminator<S> = ((...args: any[]) => S) | S;
@@ -202,7 +204,19 @@ const makeTestViewConstructor = <S, E>(
 				}
 			}
 
-			const materializedAggregate = {} as MaterializedAggregateMap<E, B>;
+			const defaultAggregates: MaterializedAggregateMap<
+				E,
+				DefaultAggregates<E>
+			> = {
+				printRoot: aggregateRealizer(
+					renderedSelector,
+					() => printElement(root),
+					root
+				)
+			};
+			const materializedAggregate = {
+				...defaultAggregates
+			} as MaterializedAggregateMap<E, B & DefaultAggregates<E>>;
 
 			for (let agg in aggregate) {
 				if (aggregate.hasOwnProperty(agg)) {

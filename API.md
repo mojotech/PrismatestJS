@@ -311,6 +311,18 @@ Returns a string representation of the elements selected by the test view. For d
 printSelected: () => string[]
 ```
 
+### Default Aggregate Methods
+
+Every test view has some default aggregate methods that are automatically provided.
+
+#### Print Root
+
+Returns a string representation of the root element used to materialize the test view. Useful for debugging purposes. The method of stringifying is determined by the adapter.
+
+```typescript
+printRoot: () => string
+```
+
 ### Errors
 
 Errors are thrown when a prerequisite for an action invocation strategy is not
