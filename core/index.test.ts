@@ -2,9 +2,13 @@ import {
 	makeAdapter,
 	TestViewConstructor,
 	ComposeSelectors,
+	Printer,
 	RunSelector,
 	IterateSelector,
-	DefaultViews
+	DefaultViews,
+	MultipleSelectedElementsError,
+	ZeroSelectedElementsError,
+	IndexOutOfBoundsError
 } from "./index";
 
 type SelectorType = string;
@@ -35,6 +39,9 @@ const iterateSelector: IterateSelector<ElementType, ElementGroupType> = (
 	}
 	return result;
 };
+
+const printSelector: Printer<SelectorType> = s => s;
+const printElement: Printer<ElementType> = s => s;
 
 const defaultTestViews: any = {
 	checkbox: {
@@ -71,6 +78,8 @@ const testView: TestViewConstructor<SelectorType, ElementType> = makeAdapter(
 	composeSelectors,
 	runSelector,
 	iterateSelector,
+	printSelector,
+	printElement,
 	defaultTestViews as DefaultViews<SelectorType, ElementType> // these aren't used or tested here
 );
 
@@ -210,5 +219,82 @@ describe("materialized test views", () => {
 		// Deprecated
 		mat.actions.action.at(3);
 		mat.actions.pAction.at(3, 1);
+	});
+});
+
+describe("Debugging failing selectors", () => {
+	test("If a selector fails, its string representation is output", () => {
+		const a = testView("a");
+
+		try {
+			a.materialize("aba").get.one();
+		} catch (e) {
+			expect(e).toBeInstanceOf(MultipleSelectedElementsError);
+			expect(e.message).toContain('Selector: "a"');
+		}
+
+		try {
+			a.materialize("bbbb").get.one();
+		} catch (e) {
+			expect(e).toBeInstanceOf(ZeroSelectedElementsError);
+			expect(e.message).toContain('Selector: "a"');
+		}
+
+		try {
+			a.materialize("abbb").get.at(2);
+		} catch (e) {
+			expect(e).toBeInstanceOf(IndexOutOfBoundsError);
+			expect(e.message).toContain('Selector: "a"');
+		}
+	});
+
+	test("If a selector fails, the string representation of the selected elements are output", () => {
+		const a = testView("a");
+
+		try {
+			a.materialize("aba").get.one();
+		} catch (e) {
+			expect(e).toBeInstanceOf(MultipleSelectedElementsError);
+			expect(e.message).toContain('Selected: [\n\t\t"a",\n\t\t"a",\n\t]');
+		}
+
+		try {
+			a.materialize("bbbb").get.one();
+		} catch (e) {
+			expect(e).toBeInstanceOf(ZeroSelectedElementsError);
+			expect(e.message).toContain("Selected: []");
+		}
+
+		try {
+			a.materialize("abbb").get.at(2);
+		} catch (e) {
+			expect(e).toBeInstanceOf(IndexOutOfBoundsError);
+			expect(e.message).toContain('Selected: [\n\t\t"a",\n\t]');
+		}
+	});
+
+	test("If a selector fails, the string representation of the root is output", () => {
+		const a = testView("a");
+
+		try {
+			a.materialize("aba").get.one();
+		} catch (e) {
+			expect(e).toBeInstanceOf(MultipleSelectedElementsError);
+			expect(e.message).toContain('Root: "aba"');
+		}
+
+		try {
+			a.materialize("bbbb").get.one();
+		} catch (e) {
+			expect(e).toBeInstanceOf(ZeroSelectedElementsError);
+			expect(e.message).toContain('Root: "bbbb"');
+		}
+
+		try {
+			a.materialize("abbb").get.at(2);
+		} catch (e) {
+			expect(e).toBeInstanceOf(IndexOutOfBoundsError);
+			expect(e.message).toContain('Root: "abbb"');
+		}
 	});
 });
