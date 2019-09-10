@@ -303,6 +303,14 @@ Returns the element that was selected.
 get: () => ElementType
 ```
 
+#### Print Selected
+
+Returns a string representation of the elements selected by the test view. For debugging. The method of stringifying is determined by the adapter.
+
+```typescript
+printSelected: () => string[]
+```
+
 ### Errors
 
 Errors are thrown when a prerequisite for an action invocation strategy is not
