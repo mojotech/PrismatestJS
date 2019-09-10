@@ -305,4 +305,10 @@ describe("Debugging failing selectors", () => {
 		expect(a.materialize("a").printSelected.one()).toEqual("a");
 		expect(a.materialize("aba").printSelected.at(2)).toEqual("a");
 	});
+
+	test("A printRoot aggregate can be used to see the string representation of the root", () => {
+		const a = testView("a");
+
+		expect(a.materialize("aba").printRoot()).toEqual("aba");
+	});
 });
