@@ -287,10 +287,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@mojotech/prismatest@^0.2.0":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@mojotech/prismatest/-/prismatest-0.2.1.tgz#06cbf045b341506bd92438408484bb1d14d8dadf"
-  integrity sha512-UUJ0IaWylmtYB3d+SXGCW+gLkEcWkEeTZCc2yBDifxNFkVbFK16u75CaAvk/pNZU7u3sigAlu4P5uXIhjV6/2A==
+"@mojotech/prismatest@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@mojotech/prismatest/-/prismatest-0.3.0.tgz#a11b3b814b82a477b54c86570131e6d0808da5c9"
+  integrity sha512-UmMfJRNNj1AhTVtRXzjKrtiXcrTsLBIaAq7dJT8VS3pmxkKYGgZkG96GcyqvjBDsZd+pAFM+OpfdqBoKB02u4A==
 
 "@types/babel__core@^7.1.0":
   version "7.1.2"
