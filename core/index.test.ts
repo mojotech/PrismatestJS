@@ -311,4 +311,16 @@ describe("Debugging failing selectors", () => {
 
 		expect(a.materialize("aba").printRoot()).toEqual("aba");
 	});
+
+	test("A printSelector aggregate can be used to see the string representation of the selector", () => {
+		const sel = testView("a")(testView("b"));
+
+		expect(sel.materialize("aba").printSelector()).toEqual("ab");
+	});
+
+	test("A printSelector aggregate can be used to see the string representation of the parameterized selector", () => {
+		const sel = testView(x => x + "a")(testView("b"));
+
+		expect(sel.materialize("aba", "foo").printSelector()).toEqual("fooab");
+	});
 });

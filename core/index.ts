@@ -17,6 +17,7 @@ type AggregateParameters<E, A extends Aggregate<E>> = AParameters<A>;
 type AggregateMap<E> = { [k: string]: Aggregate<E> };
 type DefaultAggregates<E> = {
 	printRoot: (e: E[]) => string;
+	printSelector: (e: E[]) => string;
 };
 
 // Materialized aggregate types
@@ -131,6 +132,7 @@ const makeTestViewConstructor = <S, E>(
 	composeSelectors: ComposeSelectors<S>,
 	actionRealizer: ActionMaterializer<S, E>,
 	aggregateRealizer: AggregateMaterializer<S, E>,
+	printSelector: Printer<S>,
 	printElement: Printer<E>,
 	defaultViews: DefaultViews<S, E>
 ): TestViewConstructor<S, E> => {
@@ -208,6 +210,11 @@ const makeTestViewConstructor = <S, E>(
 				E,
 				DefaultAggregates<E>
 			> = {
+				printSelector: aggregateRealizer(
+					renderedSelector,
+					() => printSelector(renderedSelector),
+					root
+				),
 				printRoot: aggregateRealizer(
 					renderedSelector,
 					() => printElement(root),
@@ -474,6 +481,7 @@ export const makeAdapter = <S, E, EG>(
 			printElement
 		),
 		makeAggregateRealizer<S, E, EG>(runSelector, iterateSelector),
+		printSelector,
 		printElement,
 		defaultViews
 	);

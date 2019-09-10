@@ -315,6 +315,14 @@ printSelected: () => string[]
 
 Every test view has some default aggregate methods that are automatically provided.
 
+#### Print Selector
+
+Returns a string representation of the selector computed by the test view. This includes composed test views as well as any parameterization. Useful for debugging purposes. The method of stringifying is determined by the adapter.
+
+```typescript
+printSelector: () => string
+```
+
 #### Print Root
 
 Returns a string representation of the root element used to materialize the test view. Useful for debugging purposes. The method of stringifying is determined by the adapter.

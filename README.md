@@ -90,7 +90,7 @@ all adapters.
 
 If a selector fails to select the required number of elements an error will be raised in the test. The error object includes more context about the error. The error messages should include a string representation of the selector, the root of the test view, and the selected elements.
 
-There are some default actions and aggregate methods useful for debugging tests with test views. A `printSelected` action is provided to return a string representation of the selected elements in a test view. A `printRoot` aggregate method is provided to return a string representation of the root of the test view.
+There are some default actions and aggregate methods useful for debugging tests with test views. A `printSelected` action is provided to return a string representation of the selected elements in a test view. A `printSelector` aggregate method is provided to return a string representation of the selector (including the result of any parameterization). A `printRoot` aggregate method is provided to return a string representation of the root of the test view.
 
 ## Contributing
 
