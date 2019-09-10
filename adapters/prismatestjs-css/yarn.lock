@@ -287,20 +287,20 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@mojotech/prismatest-adapter-tests@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@mojotech/prismatest-adapter-tests/-/prismatest-adapter-tests-0.1.6.tgz#1fb6861b0d50d1a89f493e1d04e79065bde4ee8a"
-  integrity sha512-V5ipyRZUrSSLufuSVGWxKgL8JbIuAcIy93i6hU7umZdBuDkgjDqSLtcIvnhI78gYKipbNLCAsA3yyAn4+qw4rg==
+"@mojotech/prismatest-adapter-tests@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@mojotech/prismatest-adapter-tests/-/prismatest-adapter-tests-0.1.9.tgz#d4db09ffa8555d7ea9caa060e92bb4288a240c26"
+  integrity sha512-h/iQW8Mh9T+H8XE3U4RVNL89UeAUo7nW0hlEUkRjaYMvTOXWJCHv4YBdvpm3OYTKj8mKgL5BY3gDL4QUgO4djw==
   dependencies:
-    "@mojotech/prismatest" "^0.2.0"
+    "@mojotech/prismatest" "^0.3.0"
     jest "^24.8.0"
     jest-expect-message "^1.0.2"
     react "^16.8.6"
 
-"@mojotech/prismatest@^0.2.0":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@mojotech/prismatest/-/prismatest-0.2.1.tgz#06cbf045b341506bd92438408484bb1d14d8dadf"
-  integrity sha512-UUJ0IaWylmtYB3d+SXGCW+gLkEcWkEeTZCc2yBDifxNFkVbFK16u75CaAvk/pNZU7u3sigAlu4P5uXIhjV6/2A==
+"@mojotech/prismatest@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@mojotech/prismatest/-/prismatest-0.3.0.tgz#a11b3b814b82a477b54c86570131e6d0808da5c9"
+  integrity sha512-UmMfJRNNj1AhTVtRXzjKrtiXcrTsLBIaAq7dJT8VS3pmxkKYGgZkG96GcyqvjBDsZd+pAFM+OpfdqBoKB02u4A==
 
 "@types/babel__core@^7.1.0":
   version "7.1.2"

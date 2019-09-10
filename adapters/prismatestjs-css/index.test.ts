@@ -7,3 +7,19 @@ generateTests(cssTestView, e => {
 	ReactDOM.render(e, domContainer);
 	return domContainer;
 });
+
+test("printSelector outputs the selector", () => {
+	const selector = ".target";
+	const el = document.createElement("div");
+	const view = cssTestView(selector).materialize(el);
+
+	expect(view.printSelector()).toEqual(selector);
+});
+
+test("printRoot outputs the outer html", () => {
+	const selector = ".target";
+	const el = document.createElement("div");
+	const view = cssTestView(selector).materialize(el);
+
+	expect(view.printRoot()).toEqual("<div></div>");
+});
