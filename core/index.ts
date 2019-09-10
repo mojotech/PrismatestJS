@@ -39,6 +39,7 @@ type ActionParameters<E, A extends Action<E>> = AParameters<A>;
 type ActionMap<E> = { [k: string]: Action<E> };
 type DefaultActions<E> = {
 	get: (e: E) => E;
+	printSelected: (e: E) => string;
 };
 
 // Materialized action types
@@ -128,6 +129,7 @@ const makeTestViewConstructor = <S, E>(
 	composeSelectors: ComposeSelectors<S>,
 	actionRealizer: ActionMaterializer<S, E>,
 	aggregateRealizer: AggregateMaterializer<S, E>,
+	printElement: Printer<E>,
 	defaultViews: DefaultViews<S, E>
 ): TestViewConstructor<S, E> => {
 	// Once an adapter is plugged in, test views are created by supplying a
@@ -183,7 +185,8 @@ const makeTestViewConstructor = <S, E>(
 			const renderedSelector =
 				selector instanceof Function ? selector(...selectorArgs) : selector;
 			const defaultActions: MaterializedActionMap<E, DefaultActions<E>> = {
-				get: actionRealizer(renderedSelector, (e: E) => e, root)
+				get: actionRealizer(renderedSelector, (e: E) => e, root),
+				printSelected: actionRealizer(renderedSelector, printElement, root)
 			};
 			const materializedActions = {
 				...defaultActions
@@ -457,6 +460,7 @@ export const makeAdapter = <S, E, EG>(
 			printElement
 		),
 		makeAggregateRealizer<S, E, EG>(runSelector, iterateSelector),
+		printElement,
 		defaultViews
 	);
 

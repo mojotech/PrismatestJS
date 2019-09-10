@@ -297,4 +297,12 @@ describe("Debugging failing selectors", () => {
 			expect(e.message).toContain('Root: "abbb"');
 		}
 	});
+
+	test("A printSelected action can be used to see the string representation of the selected elements", () => {
+		const a = testView("a");
+
+		expect(a.materialize("aba").printSelected()).toEqual(["a", "a"]);
+		expect(a.materialize("a").printSelected.one()).toEqual("a");
+		expect(a.materialize("aba").printSelected.at(2)).toEqual("a");
+	});
 });

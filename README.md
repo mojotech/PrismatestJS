@@ -90,6 +90,8 @@ all adapters.
 
 If a selector fails to select the required number of elements an error will be raised in the test. The error object includes more context about the error. The error messages should include a string representation of the selector, the root of the test view, and the selected elements.
 
+There is a default action useful for debugging tests with test views. A `printSelected` action is provided to return a string representation of the selected elements in a test view.
+
 ## Contributing
 
 Build the individual projects using `yarn build` or `npm run build`.
