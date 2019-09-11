@@ -230,21 +230,21 @@ describe("Debugging failing selectors", () => {
 			a.materialize("aba").get.one();
 		} catch (e) {
 			expect(e).toBeInstanceOf(MultipleSelectedElementsError);
-			expect(e.message).toContain('Selector: "a"');
+			expect(e.message).toContain("Selector:\n\t\ta\n");
 		}
 
 		try {
 			a.materialize("bbbb").get.one();
 		} catch (e) {
 			expect(e).toBeInstanceOf(ZeroSelectedElementsError);
-			expect(e.message).toContain('Selector: "a"');
+			expect(e.message).toContain("Selector:\n\t\ta\n");
 		}
 
 		try {
 			a.materialize("abbb").get.at(2);
 		} catch (e) {
 			expect(e).toBeInstanceOf(IndexOutOfBoundsError);
-			expect(e.message).toContain('Selector: "a"');
+			expect(e.message).toContain("Selector:\n\t\ta\n");
 		}
 	});
 
@@ -255,21 +255,23 @@ describe("Debugging failing selectors", () => {
 			a.materialize("aba").get.one();
 		} catch (e) {
 			expect(e).toBeInstanceOf(MultipleSelectedElementsError);
-			expect(e.message).toContain('Selected: [\n\t\t"a",\n\t\t"a",\n\t]');
+			expect(e.message).toContain(
+				'Selected:\n\t\t[\n\t\t\t"a",\n\t\t\t"a",\n\t\t]\n'
+			);
 		}
 
 		try {
 			a.materialize("bbbb").get.one();
 		} catch (e) {
 			expect(e).toBeInstanceOf(ZeroSelectedElementsError);
-			expect(e.message).toContain("Selected: []");
+			expect(e.message).toContain("Selected:\n\t\t[]\n");
 		}
 
 		try {
 			a.materialize("abbb").get.at(2);
 		} catch (e) {
 			expect(e).toBeInstanceOf(IndexOutOfBoundsError);
-			expect(e.message).toContain('Selected: [\n\t\t"a",\n\t]');
+			expect(e.message).toContain('Selected:\n\t\t[\n\t\t\t"a",\n\t\t]\n');
 		}
 	});
 
@@ -280,21 +282,21 @@ describe("Debugging failing selectors", () => {
 			a.materialize("aba").get.one();
 		} catch (e) {
 			expect(e).toBeInstanceOf(MultipleSelectedElementsError);
-			expect(e.message).toContain('Root: "aba"');
+			expect(e.message).toContain("Root:\n\t\taba\n");
 		}
 
 		try {
 			a.materialize("bbbb").get.one();
 		} catch (e) {
 			expect(e).toBeInstanceOf(ZeroSelectedElementsError);
-			expect(e.message).toContain('Root: "bbbb"');
+			expect(e.message).toContain("Root:\n\t\tbbbb\n");
 		}
 
 		try {
 			a.materialize("abbb").get.at(2);
 		} catch (e) {
 			expect(e).toBeInstanceOf(IndexOutOfBoundsError);
-			expect(e.message).toContain('Root: "abbb"');
+			expect(e.message).toContain("Root:\n\t\tabbb\n");
 		}
 	});
 

@@ -277,7 +277,13 @@ const printElements = <E>(elements: E[], printer: Printer<E>): string => {
 	if (elements.length === 0) {
 		return "[]";
 	}
-	return ["[", ...elements.map(e => `\t"${printer(e)}",`), "]"].join("\n\t");
+	return ["[", ...elements.map(e => `\t"${printer(e)}",`), "]"].join("\n");
+};
+
+const indent = (toIndent: string, length: number): string => {
+	const lines = toIndent.split("\n");
+	const indented = lines.map(line => "\t".repeat(length) + line);
+	return indented.join("\n");
 };
 
 export class MultipleSelectedElementsError<S, E> extends Error {
@@ -301,9 +307,9 @@ export class MultipleSelectedElementsError<S, E> extends Error {
 		this.elements = elements;
 		this.message =
 			"Multiple elements returned by selector:\n" +
-			`\tSelector: "${printSelector(selector)}"\n` +
-			`\tRoot: "${printElement(root)}"\n` +
-			`\tSelected: ${printElements(elements, printElement)}`;
+			`\tSelector:\n${indent(printSelector(selector), 2)}\n` +
+			`\tRoot:\n${indent(printElement(root), 2)}\n` +
+			`\tSelected:\n${indent(printElements(elements, printElement), 2)}\n`;
 	}
 }
 
@@ -328,9 +334,9 @@ export class ZeroSelectedElementsError<S, E> extends Error {
 		this.elements = elements;
 		this.message =
 			"Zero elements returned by selector\n" +
-			`\tSelector: "${printSelector(selector)}"\n` +
-			`\tRoot: "${printElement(root)}"\n` +
-			`\tSelected: ${printElements(elements, printElement)}`;
+			`\tSelector:\n${indent(printSelector(selector), 2)}\n` +
+			`\tRoot:\n${indent(printElement(root), 2)}\n` +
+			`\tSelected:\n${indent(printElements(elements, printElement), 2)}\n`;
 	}
 }
 
@@ -359,9 +365,9 @@ export class IndexOutOfBoundsError<S, E> extends Error {
 		this.message =
 			"Index out of bounds\n" +
 			`\tIndex: ${index}\n` +
-			`\tSelector: "${printSelector(selector)}"\n` +
-			`\tRoot: "${printElement(root)}"\n` +
-			`\tSelected: ${printElements(elements, printElement)}`;
+			`\tSelector:\n${indent(printSelector(selector), 2)}\n` +
+			`\tRoot:\n${indent(printElement(root), 2)}\n` +
+			`\tSelected:\n${indent(printElements(elements, printElement), 2)}\n`;
 	}
 }
 
