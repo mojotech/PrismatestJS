@@ -3,7 +3,8 @@ import {
 	ComposeSelectors,
 	RunSelector,
 	IterateSelector,
-	DefaultViews
+	DefaultViews,
+	Printer
 } from "@mojotech/prismatest";
 import {
 	ReactWrapper,
@@ -15,9 +16,18 @@ import {
 // This adapter works with enzyme ReactWrappers
 export class Selector {
 	public run: (e: ReactWrapper) => ReactWrapper;
+	public str: string;
 
 	constructor(run: (e: ReactWrapper) => ReactWrapper) {
 		this.run = run;
+		this.str = `Selector: ${run.toString()}`;
+	}
+}
+
+export class ComposedSelector extends Selector {
+	constructor(first: Selector, second: Selector) {
+		super(e => second.run(first.run(e)));
+		this.str = `${first.str}\n${second.str}`;
 	}
 }
 
@@ -26,7 +36,7 @@ type ElementType = ReactWrapper;
 type ElementGroupType = ReactWrapper;
 
 const composeSelectors: ComposeSelectors<SelectorType> = (a, b) =>
-	new Selector(s => b.run(a.run(s)));
+	new ComposedSelector(a, b);
 
 const runSelector: RunSelector<SelectorType, ElementType, ElementGroupType> = (
 	selector,
@@ -38,12 +48,33 @@ const iterateSelector: IterateSelector<ElementType, ElementGroupType> = (
 	fn
 ) => nodes.map(fn);
 
+const printSelector: Printer<SelectorType> = selector => selector.str;
+
+const printElement: Printer<ElementType> = element => element.debug();
+
+export class QuickSelector<X> extends Selector {
+	constructor(arg: string);
+	constructor(arg: StatelessComponent<X>);
+	constructor(arg: ComponentType<X>);
+	constructor(arg: EnzymePropSelector);
+	constructor(arg: any) {
+		super(e => e.find(arg));
+		if (arg.displayName) {
+			this.str = `QuickSelector: "${arg.displayName}"`;
+		} else if (arg instanceof Object) {
+			this.str = `QuickSelector: "${JSON.stringify(arg, null, "\t")}"`;
+		} else {
+			this.str = `QuickSelector: "${arg.toString()}"`;
+		}
+	}
+}
+
 export function selector(arg: string): SelectorType;
 export function selector<P2>(arg: StatelessComponent<P2>): SelectorType;
 export function selector<P2>(arg: ComponentType<P2>): SelectorType;
 export function selector(arg: EnzymePropSelector): SelectorType;
 export function selector(arg: any): any {
-	return new Selector(e => e.find(arg));
+	return new QuickSelector(arg);
 }
 
 // Apparently, Enzyme isn't really intended to manipulate the raw DOM nodes,
@@ -193,5 +224,7 @@ export default makeAdapter(
 	composeSelectors,
 	runSelector,
 	iterateSelector,
+	printSelector,
+	printElement,
 	defaultViews
 );

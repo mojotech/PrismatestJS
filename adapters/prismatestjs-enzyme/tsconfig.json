@@ -8,6 +8,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "target": "ES5",
+        "jsx": "react",
         "lib": [
             "dom", "es5", "scripthost", "es2016.array.include", "es2015"
         ]
