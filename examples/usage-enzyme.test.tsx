@@ -42,3 +42,25 @@ test("User must fill out name", () => {
 	form.submit();
 	expect(nameErrors.errorText()).toEqual([]);
 });
+
+test.skip("EXAMPLE FAILURE: User can fill in password", () => {
+	const app = render(<App />);
+	const paswordInput = LabelledInput.materialize(app, "password");
+
+	paswordInput.enterText.one("testpassword");
+});
+
+test.skip("EXAMPLE FAILURE: User can fill in address", () => {
+	const app = render(<App />);
+	const form = testView.defaultViews.form.materialize(app);
+	const nameErrors = FormErrors.materialize(app, "name");
+	const nameInput = LabelledInput.materialize(app, "name");
+
+	console.log(`Root: ${nameErrors.printRoot()}`);
+	console.log(`Selector: ${nameErrors.printSelector()}`);
+	console.log(`Selected: ${nameErrors.printSelected()}`);
+	expect(nameErrors.errorText.one()).toEqual("Name is required");
+	nameInput.enterText.one("John Doe");
+	form.submit();
+	expect(nameErrors.errorText()).toEqual([]);
+});
