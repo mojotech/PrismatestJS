@@ -1,17 +1,17 @@
 {
   "name": "@mojotech/prismatest-enzyme",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Enzyme adapter for use with @mojotech/prismatest",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Mojotech",
   "license": "MIT",
   "dependencies": {
-    "@mojotech/prismatest": "^0.3.0",
+    "@mojotech/prismatest": "^0.3.1",
     "enzyme": "^3.9.0"
   },
   "devDependencies": {
-    "@mojotech/prismatest-adapter-tests": "^0.1.9",
+    "@mojotech/prismatest-adapter-tests": "^0.1.10",
     "@types/enzyme": "^3.9.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.13",
