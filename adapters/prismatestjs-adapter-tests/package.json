@@ -1,13 +1,13 @@
 {
   "name": "@mojotech/prismatest-adapter-tests",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Tests for the adapters used with the Prismatest library",
   "author": "Mojotech",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/",
   "dependencies": {
-    "@mojotech/prismatest": "^0.3.0",
+    "@mojotech/prismatest": "^0.3.1",
     "jest": "^24.8.0",
     "jest-expect-message": "^1.0.2",
     "react": "^16.8.6"
