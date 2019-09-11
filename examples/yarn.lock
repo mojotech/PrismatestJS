@@ -287,27 +287,27 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@mojotech/prismatest-css@^0.4.0":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@mojotech/prismatest-css/-/prismatest-css-0.4.1.tgz#e8c3b3561b8f307cd3e27d92916a7a99857fd67d"
-  integrity sha512-csak9Y3p/xTg31doVjwwvPtR5ZB6/teyWmtNJxc6l/Mpnwhlfk7BiuId4SEmV/JzXmXuffV0qbS7QH++sHpvjg==
+"@mojotech/prismatest-css@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@mojotech/prismatest-css/-/prismatest-css-0.4.4.tgz#d9cb31e349796be67028c3b6f881919c6ab2b392"
+  integrity sha512-IIeU31oGXqIzzdFBbng6h5+iYZRz/nBTrxKd/gGdoE6+/C5SIXGTSTy7lvNUh7ldG0eewaCDTxporFFg8LjmJg==
   dependencies:
-    "@mojotech/prismatest" "^0.2.0"
+    "@mojotech/prismatest" "^0.3.0"
     react "^16.8.6"
     react-dom "^16.8.6"
 
-"@mojotech/prismatest-enzyme@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@mojotech/prismatest-enzyme/-/prismatest-enzyme-0.2.2.tgz#83ef9da69423c952222ff5c3b5f927344456c9a0"
-  integrity sha512-MdZ9p38dYpyaDwGMQvKgXxqYWIrBAqLjvoSPBx/JTpSH3JeYHTptsgF06aSDRNRYmd1cJ//Ff8XJ2Uz9uzCg5g==
+"@mojotech/prismatest-enzyme@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@mojotech/prismatest-enzyme/-/prismatest-enzyme-0.2.5.tgz#74d889e4cda576955ae57db0325308823b9a76af"
+  integrity sha512-HtNhJQW8mXexMRmg+EeAXwnP1Zj6F9OROt3KMQYVSOoyfx5m5PnlyeEeiaw6SiunjOmSFTqOK8qx+LxKF2Putw==
   dependencies:
-    "@mojotech/prismatest" "^0.2.0"
+    "@mojotech/prismatest" "^0.3.0"
     enzyme "^3.9.0"
 
-"@mojotech/prismatest@^0.2.0":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@mojotech/prismatest/-/prismatest-0.2.1.tgz#06cbf045b341506bd92438408484bb1d14d8dadf"
-  integrity sha512-UUJ0IaWylmtYB3d+SXGCW+gLkEcWkEeTZCc2yBDifxNFkVbFK16u75CaAvk/pNZU7u3sigAlu4P5uXIhjV6/2A==
+"@mojotech/prismatest@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@mojotech/prismatest/-/prismatest-0.3.0.tgz#a11b3b814b82a477b54c86570131e6d0808da5c9"
+  integrity sha512-UmMfJRNNj1AhTVtRXzjKrtiXcrTsLBIaAq7dJT8VS3pmxkKYGgZkG96GcyqvjBDsZd+pAFM+OpfdqBoKB02u4A==
 
 "@types/babel__core@^7.1.0":
   version "7.1.2"

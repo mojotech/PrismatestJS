@@ -5,7 +5,8 @@ You can run the examples by running `yarn test`.
 ## Usage.test.tsx
 
 This file demonstrates how you would use the adapter to construct test views
-that let you inspect and interact with your application.
+that let you inspect and interact with your application. There are some failing
+tests to demonstrate the debugging tools.
 
 ## Usage.tsx
 
