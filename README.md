@@ -33,7 +33,7 @@ your specifications.
 1. Install an adapter (e.g. `@mojotech/prismatest-css`):
 
     ```bash
-    yarn install --dev @mojotech/prismatest-css
+    yarn add --dev @mojotech/prismatest-css
     ```
 
 2. Use some of the default test views to interact with your app:
