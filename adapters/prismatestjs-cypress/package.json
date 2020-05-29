@@ -1,0 +1,32 @@
+{
+  "name": "@mojotech/prismatest-cypress",
+  "version": "0.1.0",
+  "description": "Cypress adapter for use with @mojotech/prismatest.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Mojotech",
+  "license": "MIT",
+  "dependencies": {
+    "@mojotech/prismatest": "^0.3.1",
+    "cypress": "^4.7.0"
+  },
+  "devDependencies": {
+    "@mojotech/prismatest-adapter-tests": "^0.1.10",
+    "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
+    "prettier": "^1.17.1",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1"
+  },
+  "scripts": {
+    "build": "tsc --listFiles --listEmittedFiles -d --outDir ./dist",
+    "clean": "rm -rf ./dist",
+    "ts": "tsc --listFiles -w --noEmit",
+    "format": "prettier --write \"*.ts\"",
+    "test": "jest"
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ]
+}
